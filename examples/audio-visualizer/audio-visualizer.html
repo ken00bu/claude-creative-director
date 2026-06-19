@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Crypto ETP Pulse Audio Visualizer</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500&display=swap");
+            :root {
+                --paper: #fafaf8;
+                --grid: #e2e2e0;
+                --red-orange: #f2492c;
+                --electric-blue: #1632ff;
+                --lime-green: #8fdd1a;
+                --black: #111111;
+                --lavender: #c5c3dd;
+                --text: #111111;
+                --asset-color: #f2492c;
+                --grid-size: 24px;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                min-height: 100%;
+                background: linear-gradient(to right, var(--grid) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--grid) 1px, transparent 1px), var(--paper);
+                background-size: var(--grid-size) var(--grid-size);
+                color: var(--text);
+                font-family: "Inter", system-ui, sans-serif;
+                overflow-x: hidden;
+            }
+            button,
+            input,
+            label {
+                font: inherit;
+            }
+            button {
+                cursor: pointer;
+            }
+            .page {
+                width: 100%;
+            }
+            .stage {
+                position: relative;
+                min-height: 100svh;
+                overflow: hidden;
+            }
+            .headline {
+                position: absolute;
+                top: 24px;
+                left: 24px;
+                margin: 0;
+                z-index: 3;
+                max-width: 760px;
+                font-family: "Space Grotesk", system-ui, sans-serif;
+                font-size: clamp(48px, 9vw, 144px);
+                font-weight: 800;
+                line-height: 0.84;
+                letter-spacing: -0.075em;
+            }
+            .caption {
+                position: absolute;
+                left: 24px;
+                bottom: 24px;
+                z-index: 3;
+                margin: 0;
+                font-size: 12px;
+                line-height: 24px;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+            }
+            .caption span {
+                display: block;
+                font-weight: 400;
+            }
+            .asset-selector {
+                position: absolute;
+                top: 24px;
+                right: 24px;
+                z-index: 5;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                height: 24px;
+            }
+            .asset-button {
+                height: 24px;
+                padding: 0 8px;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+                color: var(--black);
+                font-size: 12px;
+                line-height: 24px;
+                font-weight: 500;
+                letter-spacing: 0.05em;
+            }
+            .asset-button.is-active {
+                background: var(--asset-color);
+                color: var(--black);
+            }
+            .asset-button[data-asset="XRP"].is-active {
+                color: var(--paper);
+            }
+            .audio-controls {
+                position: absolute;
+                top: 72px;
+                right: 24px;
+                z-index: 5;
+                display: grid;
+                grid-template-columns: repeat(4, auto);
+                align-items: center;
+                gap: 8px 16px;
+            }
+            .text-button,
+            .file-label {
+                height: 24px;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+                color: var(--black);
+                font-size: 11px;
+                line-height: 24px;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                border-bottom: 1px solid var(--black);
+            }
+            .file-input {
+                display: none;
+            }
+            .status {
+                position: absolute;
+                top: 120px;
+                right: 24px;
+                z-index: 5;
+                width: min(336px, calc(100vw - 48px));
+                margin: 0;
+                font-size: 11px;
+                line-height: 24px;
+                font-weight: 400;
+                text-align: right;
+                letter-spacing: 0.02em;
+            }
+            .config {
+                position: absolute;
+                right: 24px;
+                bottom: 24px;
+                z-index: 5;
+                display: grid;
+                grid-template-columns: 72px 144px;
+                gap: 8px 16px;
+                align-items: center;
+            }
+            .config label {
+                font-size: 11px;
+                line-height: 24px;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+            .config input[type="range"] {
+                width: 144px;
+                height: 24px;
+                appearance: none;
+                background: transparent;
+            }
+            .config input[type="range"]::-webkit-slider-runnable-track {
+                height: 1px;
+                background: var(--black);
+                border-radius: 0;
+            }
+            .config input[type="range"]::-webkit-slider-thumb {
+                appearance: none;
+                width: 8px;
+                height: 24px;
+                margin-top: -12px;
+                border: 0;
+                border-radius: 0;
+                background: var(--black);
+            }
+            .config input[type="range"]::-moz-range-track {
+                height: 1px;
+                background: var(--black);
+                border-radius: 0;
+            }
+            .config input[type="range"]::-moz-range-thumb {
+                width: 8px;
+                height: 24px;
+                border: 0;
+                border-radius: 0;
+                background: var(--black);
+            }
+            .wave-field {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 96px;
+                z-index: 2;
+                height: min(62vh, 620px);
+                display: flex;
+                align-items: flex-end;
+                gap: 8px;
+                padding: 0 24px;
+            }
+            .bar {
+                flex: 1 1 0;
+                min-width: 3px;
+                height: 24px;
+                background: var(--asset-color);
+                transform-origin: bottom center;
+                border-radius: 0;
+                will-change: height, transform, filter;
+            }
+            .tooltip {
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 20;
+                opacity: 0;
+                pointer-events: none;
+                color: var(--black);
+                font-size: 11px;
+                line-height: 16px;
+                letter-spacing: 0.02em;
+                transform: translate(-999px, -999px);
+                white-space: nowrap;
+            }
+            .tooltip strong {
+                display: block;
+                font-weight: 500;
+            }
+            .tooltip span {
+                display: block;
+                font-weight: 400;
+            }
+            .lockup-stage {
+                min-height: 100svh;
+            }
+            .crypto-word {
+                position: absolute;
+                top: 48px;
+                left: -0.28em;
+                margin: 0;
+                font-family: "Space Grotesk", system-ui, sans-serif;
+                font-size: clamp(128px, 28vw, 420px);
+                font-weight: 800;
+                line-height: 0.78;
+                letter-spacing: -0.095em;
+                color: var(--black);
+                pointer-events: none;
+                user-select: none;
+            }
+            .etps-word {
+                position: absolute;
+                right: 24px;
+                bottom: 24px;
+                margin: 0;
+                font-family: "Space Grotesk", system-ui, sans-serif;
+                font-size: clamp(112px, 22vw, 340px);
+                font-weight: 800;
+                line-height: 0.75;
+                letter-spacing: -0.09em;
+                text-align: right;
+                color: var(--black);
+                pointer-events: none;
+                user-select: none;
+            }
+            .mini-cluster {
+                position: absolute;
+                z-index: 4;
+                height: 168px;
+                display: flex;
+                align-items: flex-end;
+                gap: 8px;
+            }
+            .mini-cluster-a {
+                left: 35vw;
+                top: 42vh;
+            }
+            .mini-cluster-b {
+                left: 58vw;
+                top: 28vh;
+            }
+            .mini-bar {
+                width: 24px;
+                height: 24px;
+                background: var(--asset-color);
+                border-radius: 0;
+                transform-origin: bottom center;
+                will-change: height;
+            }
+            .small-note {
+                position: absolute;
+                left: 24px;
+                bottom: 24px;
+                margin: 0;
+                width: 240px;
+                font-size: 11px;
+                line-height: 24px;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+            @media (max-width: 760px) {
+                .headline {
+                    top: 24px;
+                    left: 24px;
+                    max-width: calc(100vw - 48px);
+                    font-size: clamp(44px, 17vw, 96px);
+                }
+                .asset-selector {
+                    top: auto;
+                    right: auto;
+                    left: 24px;
+                    bottom: 120px;
+                }
+                .audio-controls {
+                    top: auto;
+                    right: auto;
+                    left: 24px;
+                    bottom: 72px;
+                    grid-template-columns: repeat(4, auto);
+                }
+                .status {
+                    top: auto;
+                    right: auto;
+                    left: 24px;
+                    bottom: 168px;
+                    text-align: left;
+                }
+                .config {
+                    display: none;
+                }
+                .wave-field {
+                    bottom: 216px;
+                    height: 44vh;
+                    gap: 4px;
+                }
+                .caption {
+                    bottom: 24px;
+                }
+                .crypto-word {
+                    top: 72px;
+                    font-size: clamp(124px, 42vw, 260px);
+                }
+                .etps-word {
+                    font-size: clamp(108px, 38vw, 240px);
+                }
+                .mini-cluster {
+                    height: 120px;
+                }
+                .mini-cluster-a {
+                    left: 24vw;
+                    top: 46vh;
+                }
+                .mini-cluster-b {
+                    left: 62vw;
+                    top: 34vh;
+                }
+                .mini-bar {
+                    width: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="page">
+            <section class="stage">
+                <h1 class="headline">Single asset ETP</h1>
+                <nav class="asset-selector" aria-label="Asset selector">
+                    <button class="asset-button is-active" data-asset="BTC">BTC</button>
+                    <button class="asset-button" data-asset="ETH">ETH</button>
+                    <button class="asset-button" data-asset="SOL">SOL</button>
+                    <button class="asset-button" data-asset="XRP">XRP</button>
+                </nav>
+                <div class="audio-controls" aria-label="Audio controls">
+                    <button class="text-button" id="demoBtn" type="button">Demo</button>
+                    <button class="text-button" id="micBtn" type="button">Mic</button>
+                    <label class="file-label" for="fileInput">File</label>
+                    <input class="file-input" id="fileInput" type="file" accept="audio/*" />
+                    <button class="text-button" id="pauseBtn" type="button">Pause</button>
+                </div>
+                <p class="status" id="statusText">DEMO PULSE / synthetic price signal + audio-reactive spectrum</p>
+                <div class="config" aria-label="Visualizer configuration">
+                    <label for="gainRange">Gain</label>
+                    <input id="gainRange" type="range" min="0.2" max="2.4" step="0.01" value="1.1" />
+                    <label for="smoothRange">Smooth</label>
+                    <input id="smoothRange" type="range" min="0.55" max="0.95" step="0.01" value="0.78" />
+                    <label for="idleRange">Idle</label>
+                    <input id="idleRange" type="range" min="0.00" max="0.08" step="0.005" value="0.04" />
+                </div>
+                <div class="wave-field" id="waveField" aria-label="Audio reactive bar wave"></div>
+                <p class="caption">Specific coin <span id="assetCaption">BTC / red-orange pulse</span></p>
+                <div class="tooltip" id="tooltip"></div>
+            </section>
+            <section class="stage lockup-stage">
+                <h2 class="crypto-word">Crypto</h2>
+                <h2 class="etps-word">ETPs</h2>
+                <div class="mini-cluster mini-cluster-a" id="miniClusterA"></div>
+                <div class="mini-cluster mini-cluster-b" id="miniClusterB"></div>
+                <p class="small-note">Live pulse echoes the selected asset and the current audio spectrum.</p>
+            </section>
+        </main>
+        <script>
+            const BAR_COUNT = 40;
+            const TRANSITION_DURATION = 600;
+            const ASSETS = {
+                BTC: { color: "#F2492C", name: "BTC", label: "red-orange pulse", seed: 1.2, basePrice: 66400 },
+                ETH: { color: "#1632FF", name: "ETH", label: "electric-blue pulse", seed: 2.8, basePrice: 3580 },
+                SOL: { color: "#8FDD1A", name: "SOL", label: "lime-green pulse", seed: 4.4, basePrice: 168 },
+                XRP: { color: "#111111", name: "XRP", label: "black pulse", seed: 6.1, basePrice: 0.62 },
+            };
+            const state = {
+                selectedAsset: "BTC",
+                hoveredBarIndex: null,
+                sourceMode: "demo",
+                paused: false,
+                gain: 1.1,
+                smooth: 0.78,
+                idle: 0.04,
+                startTime: performance.now(),
+            };
+            const waveField = document.getElementById("waveField");
+            const tooltip = document.getElementById("tooltip");
+            const statusText = document.getElementById("statusText");
+            const assetCaption = document.getElementById("assetCaption");
+            const assetButtons = Array.from(document.querySelectorAll(".asset-button"));
+            const demoBtn = document.getElementById("demoBtn");
+            const micBtn = document.getElementById("micBtn");
+            const fileInput = document.getElementById("fileInput");
+            const pauseBtn = document.getElementById("pauseBtn");
+            const gainRange = document.getElementById("gainRange");
+            const smoothRange = document.getElementById("smoothRange");
+            const idleRange = document.getElementById("idleRange");
+            const bars = [];
+            const miniBars = [];
+            const baseStart = [];
+            const baseCurrent = [];
+            const baseTarget = [];
+            const transitionStart = [];
+            const audioSmoothed = [];
+            let priceData = [];
+            let audioCtx = null;
+            let analyser = null;
+            let freqData = null;
+            let micStream = null;
+            let micSource = null;
+            let fileSource = null;
+            let audioEl = null;
+            let currentObjectURL = null;
+            function clamp(value, min, max) {
+                return Math.max(min, Math.min(max, value));
+            }
+            function easeOutCubic(x) {
+                return 1 - Math.pow(1 - x, 3);
+            }
+            function smoothNoise(index, time, seed) {
+                const a = Math.sin(time * 0.92 + index * 0.53 + seed);
+                const b = Math.sin(time * 1.37 + index * 0.21 + seed * 1.7);
+                const c = Math.sin(time * 0.41 + index * 1.13 + seed * 0.4);
+                return a * 0.52 + b * 0.31 + c * 0.17;
+            }
+            function derivePriceSeries(assetName) {
+                const asset = ASSETS[assetName];
+                const points = [];
+                const prices = [];
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    const x = i / (BAR_COUNT - 1);
+                    const centerEnvelope = Math.pow(Math.sin(Math.PI * x), 0.62);
+                    const taper = 0.18 + centerEnvelope * 0.82;
+                    const n =
+                        Math.sin(i * 0.46 + asset.seed) * 0.38 +
+                        Math.sin(i * 0.17 + asset.seed * 2.4) * 0.34 +
+                        Math.sin(i * 0.91 + asset.seed * 0.7) * 0.2 +
+                        Math.cos(i * 0.29 + asset.seed * 1.2) * 0.08;
+                    const priceNorm = clamp((n + 1) / 2, 0, 1);
+                    const height = clamp((0.1 + priceNorm * 0.86) * taper, 0.055, 0.96);
+                    const priceSwing = 0.82 + priceNorm * 0.36 + centerEnvelope * 0.08;
+                    const price = asset.basePrice * priceSwing;
+                    const date = new Date(2026, 0, 4 + i * 7);
+                    points.push({ normalizedHeight: height, price, date });
+                    prices.push(price);
+                }
+                return points;
+            }
+            function formatPrice(assetName, value) {
+                if (assetName === "XRP") {
+                    return "$" + value.toFixed(3);
+                }
+                if (value >= 1000) {
+                    return "$" + Math.round(value).toLocaleString("en-US");
+                }
+                return "$" + value.toFixed(2);
+            }
+            function formatDate(date) {
+                return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+            }
+            function setAssetColor(assetName) {
+                const asset = ASSETS[assetName];
+                document.documentElement.style.setProperty("--asset-color", asset.color);
+                assetCaption.textContent = `${asset.name} / ${asset.label}`;
+                assetButtons.forEach((button) => {
+                    const active = button.dataset.asset === assetName;
+                    button.classList.toggle("is-active", active);
+                    if (active) {
+                        button.style.setProperty("--asset-color", asset.color);
+                    }
+                });
+            }
+            function updateBaseAnimation(now) {
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    const start = transitionStart[i];
+                    const raw = (now - start) / TRANSITION_DURATION;
+                    if (raw <= 0) {
+                        baseCurrent[i] = baseStart[i];
+                        continue;
+                    }
+                    if (raw >= 1) {
+                        baseCurrent[i] = baseTarget[i];
+                        continue;
+                    }
+                    const eased = easeOutCubic(raw);
+                    baseCurrent[i] = baseStart[i] + (baseTarget[i] - baseStart[i]) * eased;
+                }
+            }
+            function transitionToAsset(assetName) {
+                updateBaseAnimation(performance.now());
+                state.selectedAsset = assetName;
+                priceData = derivePriceSeries(assetName);
+                const now = performance.now();
+                const center = (BAR_COUNT - 1) / 2;
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    baseStart[i] = baseCurrent[i] ?? 0.08;
+                    baseTarget[i] = priceData[i].normalizedHeight;
+                    transitionStart[i] = now + Math.abs(i - center) * 5;
+                }
+                setAssetColor(assetName);
+            }
+            function createBars() {
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    const bar = document.createElement("div");
+                    bar.className = "bar";
+                    bar.dataset.index = String(i);
+                    bar.addEventListener("mouseenter", () => {
+                        state.hoveredBarIndex = i;
+                    });
+                    bar.addEventListener("mouseleave", () => {
+                        state.hoveredBarIndex = null;
+                        tooltip.style.opacity = "0";
+                    });
+                    waveField.appendChild(bar);
+                    bars.push(bar);
+                    baseStart[i] = 0.08;
+                    baseCurrent[i] = 0.08;
+                    baseTarget[i] = 0.08;
+                    transitionStart[i] = performance.now();
+                    audioSmoothed[i] = 0;
+                }
+            }
+            function createMiniCluster(elementId, indexes) {
+                const cluster = document.getElementById(elementId);
+                indexes.forEach((index) => {
+                    const mini = document.createElement("div");
+                    mini.className = "mini-bar";
+                    mini.dataset.sourceIndex = String(index);
+                    cluster.appendChild(mini);
+                    miniBars.push(mini);
+                });
+            }
+            function ensureAudio() {
+                if (audioCtx) return;
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 2048;
+                analyser.smoothingTimeConstant = 0.72;
+                freqData = new Uint8Array(analyser.frequencyBinCount);
+            }
+            function disconnectAudioGraph() {
+                if (micSource) {
+                    try {
+                        micSource.disconnect();
+                    } catch (_) {}
+                    micSource = null;
+                }
+                if (fileSource) {
+                    try {
+                        fileSource.disconnect();
+                    } catch (_) {}
+                }
+                if (analyser) {
+                    try {
+                        analyser.disconnect();
+                    } catch (_) {}
+                }
+            }
+            async function startMic() {
+                try {
+                    ensureAudio();
+                    await audioCtx.resume();
+                    if (audioEl) {
+                        audioEl.pause();
+                    }
+                    disconnectAudioGraph();
+                    if (!micStream) {
+                        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    }
+                    micSource = audioCtx.createMediaStreamSource(micStream);
+                    micSource.connect(analyser);
+                    state.sourceMode = "mic";
+                    state.paused = false;
+                    pauseBtn.textContent = "Pause";
+                    statusText.textContent = "MIC PULSE / live microphone spectrum + synthetic price signal";
+                } catch (error) {
+                    statusText.textContent = "MIC ERROR / browser needs localhost or HTTPS permission";
+                }
+            }
+            async function loadAudioFile(file) {
+                if (!file) return;
+                ensureAudio();
+                await audioCtx.resume();
+                disconnectAudioGraph();
+                if (!audioEl) {
+                    audioEl = new Audio();
+                    audioEl.loop = true;
+                    audioEl.crossOrigin = "anonymous";
+                    fileSource = audioCtx.createMediaElementSource(audioEl);
+                }
+                if (currentObjectURL) {
+                    URL.revokeObjectURL(currentObjectURL);
+                }
+                currentObjectURL = URL.createObjectURL(file);
+                audioEl.src = currentObjectURL;
+                fileSource.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                await audioEl.play();
+                state.sourceMode = "file";
+                state.paused = false;
+                pauseBtn.textContent = "Pause";
+                statusText.textContent = `FILE PULSE / ${file.name}`;
+            }
+            function startDemo() {
+                if (audioEl) {
+                    audioEl.pause();
+                }
+                if (audioCtx) {
+                    disconnectAudioGraph();
+                }
+                state.sourceMode = "demo";
+                state.paused = false;
+                pauseBtn.textContent = "Pause";
+                statusText.textContent = "DEMO PULSE / synthetic price signal + procedural beat";
+            }
+            async function togglePause() {
+                state.paused = !state.paused;
+                if (state.sourceMode === "file" && audioEl) {
+                    if (state.paused) {
+                        audioEl.pause();
+                    } else {
+                        ensureAudio();
+                        await audioCtx.resume();
+                        await audioEl.play();
+                    }
+                }
+                if (state.sourceMode === "mic" && audioCtx) {
+                    if (state.paused) {
+                        await audioCtx.suspend();
+                    } else {
+                        await audioCtx.resume();
+                    }
+                }
+                pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+            }
+            function readAudioValues(timeSeconds) {
+                const values = new Array(BAR_COUNT).fill(0);
+                if (state.paused) {
+                    for (let i = 0; i < BAR_COUNT; i++) {
+                        values[i] = audioSmoothed[i] * 0.96;
+                    }
+                    return values;
+                }
+                if (state.sourceMode !== "demo" && audioCtx && analyser && freqData && audioCtx.state === "running") {
+                    analyser.getByteFrequencyData(freqData);
+                    const minBin = 2;
+                    const maxBin = Math.floor(freqData.length * 0.62);
+                    for (let i = 0; i < BAR_COUNT; i++) {
+                        const a = i / BAR_COUNT;
+                        const b = (i + 1) / BAR_COUNT;
+                        const start = minBin + Math.floor(Math.pow(a, 1.9) * (maxBin - minBin));
+                        const end = minBin + Math.floor(Math.pow(b, 1.9) * (maxBin - minBin));
+                        let sum = 0;
+                        let count = 0;
+                        for (let bin = start; bin <= Math.max(start + 1, end); bin++) {
+                            sum += freqData[bin] || 0;
+                            count++;
+                        }
+                        const raw = sum / Math.max(1, count) / 255;
+                        values[i] = Math.pow(raw, 1.28);
+                    }
+                    return values;
+                }
+                const seed = ASSETS[state.selectedAsset].seed;
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    const x = i / (BAR_COUNT - 1);
+                    const centerEnvelope = Math.pow(Math.sin(Math.PI * x), 0.8);
+                    const beat =
+                        Math.max(0, Math.sin(timeSeconds * 2.7 + seed)) * 0.42 +
+                        Math.max(0, Math.sin(timeSeconds * 5.4 + i * 0.08)) * 0.18 +
+                        Math.max(0, smoothNoise(i, timeSeconds * 1.6, seed)) * 0.24;
+                    values[i] = clamp(beat * centerEnvelope, 0, 1);
+                }
+                return values;
+            }
+            function updateTooltip(index, barHeight) {
+                if (index === null || !priceData[index]) {
+                    tooltip.style.opacity = "0";
+                    return;
+                }
+                const data = priceData[index];
+                const assetName = state.selectedAsset;
+                const rect = bars[index].getBoundingClientRect();
+                tooltip.innerHTML = ` <strong>${assetName} · ${formatDate(data.date)}</strong> <span>Synthetic price ${formatPrice(assetName, data.price)}</span> `;
+                tooltip.style.opacity = "1";
+                tooltip.style.transform = `translate(${rect.left + rect.width / 2}px, ${rect.bottom - barHeight - 16}px) translate(-50%, -100%)`;
+            }
+            function draw(now) {
+                const elapsed = now - state.startTime;
+                const timeSeconds = elapsed / 1000;
+                const waveHeight = waveField.clientHeight;
+                updateBaseAnimation(now);
+                const rawAudio = readAudioValues(timeSeconds);
+                const asset = ASSETS[state.selectedAsset];
+                for (let i = 0; i < BAR_COUNT; i++) {
+                    const x = i / (BAR_COUNT - 1);
+                    const centerEnvelope = Math.pow(Math.sin(Math.PI * x), 0.72);
+                    audioSmoothed[i] = audioSmoothed[i] * state.smooth + rawAudio[i] * (1 - state.smooth);
+                    const idleNoise = smoothNoise(i, timeSeconds, asset.seed);
+                    const idleBreath = 1 + idleNoise * state.idle;
+                    const audioLift = audioSmoothed[i] * state.gain * (0.18 + centerEnvelope * 0.34);
+                    const normalizedHeight = clamp(baseCurrent[i] * idleBreath + audioLift, 0.04, 0.98);
+                    const heightPx = Math.max(8, normalizedHeight * waveHeight);
+                    const bar = bars[i];
+                    bar.style.height = `${heightPx}px`;
+                    if (state.hoveredBarIndex === i) {
+                        bar.style.transform = "scaleY(1.08)";
+                        bar.style.filter = "brightness(1.1)";
+                        updateTooltip(i, heightPx);
+                    } else {
+                        bar.style.transform = "scaleY(1)";
+                        bar.style.filter = "brightness(1)";
+                    }
+                }
+                miniBars.forEach((mini, miniIndex) => {
+                    const sourceIndex =
+                        Number(mini.dataset.sourceIndex) || Math.floor((miniIndex / miniBars.length) * (BAR_COUNT - 1));
+                    const sourceHeight = baseCurrent[sourceIndex] || 0.2;
+                    const sourceAudio = audioSmoothed[sourceIndex] || 0;
+                    const miniHeight = clamp(sourceHeight + sourceAudio * 0.42, 0.08, 1);
+                    mini.style.height = `${Math.max(16, miniHeight * 168)}px`;
+                });
+                requestAnimationFrame(draw);
+            }
+            function bindEvents() {
+                assetButtons.forEach((button) => {
+                    button.addEventListener("click", () => {
+                        transitionToAsset(button.dataset.asset);
+                    });
+                });
+                demoBtn.addEventListener("click", startDemo);
+                micBtn.addEventListener("click", startMic);
+                fileInput.addEventListener("change", (event) => {
+                    const file = event.target.files && event.target.files[0];
+                    loadAudioFile(file);
+                });
+                pauseBtn.addEventListener("click", togglePause);
+                gainRange.addEventListener("input", () => {
+                    state.gain = Number(gainRange.value);
+                });
+                smoothRange.addEventListener("input", () => {
+                    state.smooth = Number(smoothRange.value);
+                });
+                idleRange.addEventListener("input", () => {
+                    state.idle = Number(idleRange.value);
+                });
+            }
+            function init() {
+                createBars();
+                createMiniCluster("miniClusterA", [16, 19, 22]);
+                createMiniCluster("miniClusterB", [25, 28]);
+                bindEvents();
+                transitionToAsset("BTC");
+                requestAnimationFrame(draw);
+            }
+            init();
+        </script>
+    </body>
+</html>

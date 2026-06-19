@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RunUp Mobile Prototype</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-soft-gray: #f2f2f7;
+      --text-primary: #1c1c1e;
+      --text-secondary: #8e8e93;
+      --accent-blue: #3b82f6;
+      --accent-blue-soft: #dceafe;
+      --accent-green: #22c55e;
+      --accent-green-soft: linear-gradient(135deg, #e3f9ee, #f4fbf7);
+      --accent-pink: #ec4899;
+      --border-hairline: #e5e5ea;
+      --cta-primary-bg: #1c1c1e;
+      --cta-primary-text: #ffffff;
+
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-pill: 999px;
+      --font-ui: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      --font-number: "SF Mono", "Roboto Mono", ui-monospace, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #d8d8df;
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .desktop-note {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(420px, calc(100vw - 32px));
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: #1c1c1e;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      z-index: 50;
+      display: none;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 430px;
+      height: 100dvh;
+      background: var(--bg-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .app-header {
+      padding: 18px 20px 10px;
+      background: var(--bg-primary);
+      z-index: 5;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      font-size: 25px;
+      color: var(--text-primary);
+    }
+
+    .logo-mark {
+      width: 31px;
+      height: 31px;
+      border-radius: 11px;
+      background: var(--text-primary);
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-mark svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-soft-gray);
+      color: var(--text-primary);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .stepper {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step {
+      height: 5px;
+      border-radius: var(--radius-pill);
+      background: var(--border-hairline);
+      flex: 1;
+    }
+
+    .step.is-active {
+      flex: 1.6;
+      background: var(--text-primary);
+    }
+
+    .screen-title {
+      margin: 18px 0 0;
+      font-size: 28px;
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+      font-weight: 800;
+    }
+
+    .screen-subtitle {
+      margin: 8px 0 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 164px;
+      scrollbar-width: none;
+    }
+
+    .content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .screen {
+      display: none;
+      padding-top: 8px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      background: var(--bg-soft-gray);
+      padding: 18px;
+      margin-top: 20px;
+    }
+
+    .card.white {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .card.success {
+      background: var(--accent-green-soft);
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin: 0 0 14px;
+    }
+
+    .muted {
+      color: var(--text-secondary);
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    .runner-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .runner-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .runner-name {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.025em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rating {
+      margin-top: 4px;
+      color: var(--accent-blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .rating span {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .runner-right {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    .runner-right strong {
+      display: block;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-top: 2px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 9px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      min-height: 34px;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge.blue {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+    }
+
+    .badge.green {
+      background: rgba(242, 242, 247, 0.8);
+      color: #17803f;
+    }
+
+    .check-icon {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .green-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-family: var(--font-number);
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      margin-top: 8px;
+    }
+
+    .stat-value span {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      letter-spacing: 0;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    .goal-card {
+      text-align: center;
+      padding: 22px 18px;
+    }
+
+    .goal-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .goal-number {
+      font-family: var(--font-number);
+      font-size: 44px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.1em;
+    }
+
+    .goal-number span {
+      font-family: var(--font-ui);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .tiny-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 7px;
+      border-radius: var(--radius-pill);
+      background: var(--border-hairline);
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .progress-fill {
+      width: 62%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent-green);
+    }
+
+    .primary-inline {
+      width: 100%;
+      margin-top: 16px;
+      height: 52px;
+      border-radius: var(--radius-pill);
+      background: var(--text-primary);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .activity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      margin-top: 14px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .activity-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .activity-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .activity-distance {
+      font-family: var(--font-number);
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.07em;
+    }
+
+    .map-card {
+      height: 208px;
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(90deg, rgba(229,229,234,.8) 1px, transparent 1px),
+        linear-gradient(rgba(229,229,234,.8) 1px, transparent 1px),
+        #fafafa;
+      background-size: 32px 32px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .route-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .route-line {
+      fill: none;
+      stroke: var(--accent-blue);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .route-dot {
+      fill: var(--accent-green);
+      stroke: #fff;
+      stroke-width: 4;
+    }
+
+    .map-chip {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      padding: 8px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,.9);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .mode-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mode {
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--border-hairline);
+      padding: 13px;
+      font-weight: 800;
+      font-size: 13px;
+      text-align: left;
+      color: var(--text-primary);
+    }
+
+    .mode.is-active {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+    }
+
+    .record-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .record-metric {
+      border-radius: 20px;
+      background: var(--bg-soft-gray);
+      padding: 16px;
+    }
+
+    .record-metric.big {
+      grid-column: span 2;
+      text-align: center;
+      padding: 22px;
+    }
+
+    .record-metric .label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .record-metric .value {
+      font-family: var(--font-number);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      margin-top: 8px;
+    }
+
+    .record-metric.big .value {
+      font-size: 56px;
+      line-height: 1;
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 8px;
+    }
+
+    .stop-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 12px;
+      min-height: 72px;
+      position: relative;
+    }
+
+    .stop-row:last-child {
+      min-height: 44px;
+    }
+
+    .dot-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border-hairline);
+      background: var(--bg-primary);
+      margin-top: 3px;
+      z-index: 2;
+      transition: 220ms ease;
+    }
+
+    .stop-row.completed .dot {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .stop-row.active .dot {
+      background: var(--accent-blue);
+      border: 3px solid var(--accent-blue);
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.14);
+      animation: pulseDot 2s infinite;
+    }
+
+    .connector {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: calc(100% - 19px);
+      border-radius: var(--radius-pill);
+      background: var(--border-hairline);
+      overflow: hidden;
+    }
+
+    .connector-fill {
+      width: 100%;
+      height: 0;
+      background: var(--accent-blue);
+      border-radius: inherit;
+      transition: height 600ms ease-out;
+    }
+
+    .stop-row.completed .connector-fill,
+    .stop-row.active .connector-fill {
+      height: 100%;
+    }
+
+    .stop-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stop-row.active .stop-label,
+    .stop-row.completed .stop-label {
+      color: var(--text-primary);
+      font-weight: 800;
+    }
+
+    .stop-address {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .stop-time {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .stop-note {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+      letter-spacing: 0;
+    }
+
+    .reminder {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+      margin-top: 8px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .reminder h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .reminder p {
+      margin: 5px 0 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .set-btn {
+      min-width: 66px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-soft-gray);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 800;
+      transition: transform 120ms ease-out;
+    }
+
+    .set-btn.pressed,
+    .primary-cta.pressed {
+      transform: scale(.96);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .tab {
+      height: 38px;
+      padding: 0 15px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-soft-gray);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tab.is-active {
+      background: var(--text-primary);
+      color: #fff;
+    }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      height: 118px;
+      margin-top: 18px;
+      padding: 0 4px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 999px 999px 5px 5px;
+      background: var(--border-hairline);
+      min-height: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: var(--h);
+      background: var(--accent-blue);
+      border-radius: inherit;
+    }
+
+    .pr-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pr-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      border-radius: 17px;
+      padding: 13px 14px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .pr-item strong {
+      font-size: 13px;
+    }
+
+    .pr-item span {
+      font-family: var(--font-number);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .feed-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .feed-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feed-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-soft-gray);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .feed-name {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .feed-title {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .mini-route {
+      height: 128px;
+      border-radius: 18px;
+      margin-top: 14px;
+      background:
+        linear-gradient(90deg, rgba(229,229,234,.8) 1px, transparent 1px),
+        linear-gradient(rgba(229,229,234,.8) 1px, transparent 1px),
+        #fafafa;
+      background-size: 26px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .caption {
+      font-size: 14px;
+      line-height: 1.45;
+      margin: 14px 0 0;
+      color: var(--text-primary);
+    }
+
+    .feed-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .feed-actions button {
+      flex: 1;
+      height: 38px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-soft-gray);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .challenge-card {
+      background: var(--accent-green-soft);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-top: 20px;
+    }
+
+    .challenge-card h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+    }
+
+    .challenge-meta {
+      margin-top: 10px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .challenge-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .challenge-item {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--border-hairline);
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .challenge-item strong {
+      font-size: 14px;
+    }
+
+    .challenge-item span {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .profile-head {
+      text-align: center;
+      padding-top: 14px;
+    }
+
+    .profile-photo {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      font-weight: 900;
+      margin: 0 auto 14px;
+    }
+
+    .profile-name {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.055em;
+    }
+
+    .profile-bio {
+      margin: 6px 0 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .profile-stat {
+      background: var(--bg-soft-gray);
+      border-radius: 17px;
+      padding: 12px 6px;
+      text-align: center;
+    }
+
+    .profile-stat strong {
+      display: block;
+      font-family: var(--font-number);
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+    }
+
+    .profile-stat span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .empty {
+      border: 1px dashed var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .empty h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .empty p {
+      margin: 8px 0 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 20px 18px;
+      background: linear-gradient(to top, #fff 78%, rgba(255,255,255,0));
+      z-index: 10;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .round-action {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg-soft-gray);
+      color: var(--text-primary);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .round-action svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .primary-cta {
+      flex: 1;
+      height: 56px;
+      border-radius: var(--radius-pill);
+      background: var(--cta-primary-bg);
+      color: var(--cta-primary-text);
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      transition: transform 120ms ease-out;
+    }
+
+    .bottom-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 12px;
+      padding: 7px;
+      border-radius: 24px;
+      background: var(--bg-soft-gray);
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: 44px;
+      border-radius: 18px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      gap: 2px;
+    }
+
+    .nav-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .nav-btn.active {
+      background: #fff;
+      color: var(--text-primary);
+    }
+
+    .app.is-onboarding .bottom-nav,
+    .app.is-onboarding .round-action {
+      display: none;
+    }
+
+    .app.is-onboarding .primary-cta {
+      flex: 1;
+    }
+
+    .flash-success {
+      animation: flashSuccess 620ms ease-out;
+    }
+
+    .summary-hero {
+      text-align: center;
+      padding: 28px 18px;
+    }
+
+    .summary-hero h2 {
+      margin: 0;
+      font-size: 32px;
+      line-height: .95;
+      letter-spacing: -0.06em;
+      font-weight: 900;
+    }
+
+    .summary-hero p {
+      margin: 10px auto 0;
+      max-width: 260px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.16); }
+      55% { box-shadow: 0 0 0 13px rgba(59, 130, 246, 0.04); }
+      100% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.16); }
+    }
+
+    @keyframes flashSuccess {
+      0% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0); }
+      25% { box-shadow: inset 0 0 0 2px rgba(34, 197, 94, .75); }
+      100% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    @media (min-width: 540px) {
+      .desktop-note {
+        display: block;
+      }
+
+      .phone {
+        width: 430px;
+        height: 932px;
+        max-height: calc(100vh - 56px);
+        margin: 28px 0;
+        border-radius: 38px;
+        box-shadow: 0 20px 80px rgba(0,0,0,.15);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="desktop-note">Buka DevTools lalu aktifkan mobile mode agar desain ini terlihat sesuai prototype aplikasi.</div>
+
+  <main class="phone" id="phone">
+    <div class="app is-onboarding" id="app">
+      <header class="app-header">
+        <div class="header-row">
+          <div class="logo">
+            <div class="logo-mark">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M6 16.2c3.2-4.6 6.8-7.2 12-8.5M6.2 16.3l3.1-.1m-3.1.1 1.4 2.7M12 7.5l1.1 4.2 4.2-.2" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            RunUp
+          </div>
+          <button class="close-btn" aria-label="Close">×</button>
+        </div>
+
+        <div class="stepper">
+          <div class="step"></div>
+          <div class="step is-active"></div>
+          <div class="step"></div>
+        </div>
+
+        <h1 class="screen-title" id="headerTitle">Move forward with every run.</h1>
+        <p class="screen-subtitle" id="headerSubtitle">Track your route, pace, distance, and progress with RunUp.</p>
+      </header>
+
+      <section class="content">
+        <div class="screen active" data-screen="onboarding">
+          <div class="card runner-card">
+            <div class="runner-left">
+              <div class="avatar">A</div>
+              <div>
+                <div class="runner-name">Alex Runner</div>
+                <div class="rating">★ GPS ready <span>(new runner setup)</span></div>
+              </div>
+            </div>
+            <div class="runner-right">
+              Goal preview
+              <strong>20 km</strong>
+            </div>
+          </div>
+
+          <div class="badges">
+            <div class="badge blue"><span class="check-icon">✓</span>GPS Verified</div>
+            <div class="badge green"><span class="green-dot"></span>Safe Pace</div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">What’s your running goal?</h2>
+            <div class="mode-list">
+              <button class="mode is-active">Build a running habit</button>
+              <button class="mode">Improve my pace</button>
+              <button class="mode">Train for a race</button>
+              <button class="mode">Join communities</button>
+            </div>
+          </div>
+
+          <div class="card success goal-card">
+            <div class="goal-label">Your first milestone</div>
+            <div class="goal-number">5<span> km starter</span></div>
+            <div class="tiny-pill">beginner friendly</div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">Enable GPS Tracking</h2>
+            <p class="screen-subtitle" style="margin:0;">RunUp uses your location to track your route, distance, and pace during your run.</p>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="home">
+          <div class="card runner-card">
+            <div class="runner-left">
+              <div class="avatar">A</div>
+              <div>
+                <div class="runner-name">Good morning, Alex</div>
+                <div class="rating">★ 4 runs this week <span>(740 kcal)</span></div>
+              </div>
+            </div>
+            <div class="runner-right">
+              Avg pace
+              <strong>6'21"</strong>
+            </div>
+          </div>
+
+          <div class="badges">
+            <div class="badge blue"><span class="check-icon">✓</span>GPS Ready</div>
+            <div class="badge green"><span class="green-dot"></span>Healthy Streak</div>
+          </div>
+
+          <div class="card success goal-card">
+            <div class="goal-label">Weekly Goal</div>
+            <div class="goal-number">12.4<span> / 20 km</span></div>
+            <div class="progress-track"><div class="progress-fill"></div></div>
+            <div class="tiny-pill">only 7.6 km away</div>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Your week is looking strong.</h2>
+            <div class="stats-grid">
+              <div class="stat">
+                <div class="stat-label">Distance</div>
+                <div class="stat-value">12.4<span>km</span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Running time</div>
+                <div class="stat-value">1h18<span>m</span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg pace</div>
+                <div class="stat-value">6'21"</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Calories</div>
+                <div class="stat-value">740<span>kcal</span></div>
+              </div>
+            </div>
+
+            <div class="activity-row">
+              <div>
+                <div class="activity-title">Morning Run</div>
+                <div class="activity-meta">26 min · 6'12"/km</div>
+              </div>
+              <div class="activity-distance">4.2</div>
+            </div>
+          </div>
+
+          <div class="reminder">
+            <div>
+              <h3>Set Reminder</h3>
+              <p>Tomorrow morning run<br />06:30 AM near your usual route.</p>
+            </div>
+            <button class="set-btn">Set</button>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="record">
+          <div class="map-card">
+            <div class="map-chip">Outdoor Run · GPS locked</div>
+            <svg class="route-svg" viewBox="0 0 360 208">
+              <path class="route-line" d="M42 155 C80 102, 104 105, 137 122 S198 152, 223 95 S276 58, 316 76" />
+              <circle class="route-dot" cx="42" cy="155" r="7" />
+              <circle class="route-dot" cx="316" cy="76" r="7" />
+            </svg>
+          </div>
+
+          <div class="card white" id="preRunCard">
+            <h2 class="section-title">Start Run</h2>
+            <p class="screen-subtitle" style="margin:0;">Recording screen dibuat minim gangguan. Angka utama besar agar mudah dibaca saat lari.</p>
+            <div class="mode-list">
+              <button class="mode is-active">Outdoor Run</button>
+              <button class="mode">Treadmill</button>
+              <button class="mode">Free Run</button>
+              <button class="mode">Goal Run</button>
+            </div>
+          </div>
+
+          <div class="record-stats" id="activeRunStats">
+            <div class="record-metric big">
+              <div class="label">Distance</div>
+              <div class="value">2.48 km</div>
+            </div>
+            <div class="record-metric">
+              <div class="label">Duration</div>
+              <div class="value">14:32</div>
+            </div>
+            <div class="record-metric">
+              <div class="label">Current pace</div>
+              <div class="value">5'52"</div>
+            </div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">Run Timeline</h2>
+            <div class="timeline" id="timeline">
+              <div class="stop-row active" data-index="0">
+                <div class="dot-wrap">
+                  <button class="dot" aria-label="Warm up"></button>
+                  <div class="connector"><div class="connector-fill"></div></div>
+                </div>
+                <div>
+                  <div class="stop-label">Pickup pace</div>
+                  <div class="stop-address">Warm up · Easy start</div>
+                </div>
+                <div class="stop-time">06:24<span class="stop-note">(active)</span></div>
+              </div>
+
+              <div class="stop-row upcoming" data-index="1">
+                <div class="dot-wrap">
+                  <button class="dot" aria-label="KM 1"></button>
+                  <div class="connector"><div class="connector-fill"></div></div>
+                </div>
+                <div>
+                  <div class="stop-label">KM 1</div>
+                  <div class="stop-address">Find rhythm · 6'20"</div>
+                </div>
+                <div class="stop-time">06:30<span class="stop-note">(in 5 mins)</span></div>
+              </div>
+
+              <div class="stop-row upcoming" data-index="2">
+                <div class="dot-wrap">
+                  <button class="dot" aria-label="Midpoint"></button>
+                  <div class="connector"><div class="connector-fill"></div></div>
+                </div>
+                <div>
+                  <div class="stop-label">Midpoint</div>
+                  <div class="stop-address">Hold pace · 5'58"</div>
+                </div>
+                <div class="stop-time">06:42<span class="stop-note">(estimated)</span></div>
+              </div>
+
+              <div class="stop-row upcoming" data-index="3">
+                <div class="dot-wrap">
+                  <button class="dot" aria-label="Finish"></button>
+                </div>
+                <div>
+                  <div class="stop-label">Finish</div>
+                  <div class="stop-address">Save activity summary</div>
+                </div>
+                <div class="stop-time">06:56<span class="stop-note">(arrival)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="summary">
+          <div class="card success summary-hero">
+            <h2>Nice run!</h2>
+            <p>Great effort today. You finished 5.2 km with an average pace of 6'05"/km.</p>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Run Completed Summary</h2>
+            <div class="stats-grid">
+              <div class="stat">
+                <div class="stat-label">Distance</div>
+                <div class="stat-value">5.20<span>km</span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Time</div>
+                <div class="stat-value">31:42</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg pace</div>
+                <div class="stat-value">6'05"</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Calories</div>
+                <div class="stat-value">360<span>kcal</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">Splits</h2>
+            <div class="pr-list">
+              <div class="pr-item"><strong>KM 1</strong><span>6'20"</span></div>
+              <div class="pr-item"><strong>KM 2</strong><span>6'05"</span></div>
+              <div class="pr-item"><strong>KM 3</strong><span>5'58"</span></div>
+              <div class="pr-item"><strong>KM 4</strong><span>6'12"</span></div>
+              <div class="pr-item"><strong>KM 5</strong><span>5'49"</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="progress">
+          <div class="filter-tabs">
+            <button class="tab is-active">Week</button>
+            <button class="tab">Month</button>
+            <button class="tab">Year</button>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Small steps, real progress.</h2>
+            <p class="screen-subtitle" style="margin:0;">You’re 18% more consistent than last month. Keep the momentum going.</p>
+            <div class="bars">
+              <div class="bar" style="height:42%; --h: 64%;"></div>
+              <div class="bar" style="height:72%; --h: 80%;"></div>
+              <div class="bar" style="height:52%; --h: 68%;"></div>
+              <div class="bar" style="height:88%; --h: 92%;"></div>
+              <div class="bar" style="height:66%; --h: 72%;"></div>
+              <div class="bar" style="height:96%; --h: 100%;"></div>
+              <div class="bar" style="height:58%; --h: 70%;"></div>
+            </div>
+          </div>
+
+          <div class="card success">
+            <h2 class="section-title">7-day active streak</h2>
+            <div class="goal-number">4<span> runs this week</span></div>
+            <div class="tiny-pill">consistency improved</div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">Personal Records</h2>
+            <div class="pr-list">
+              <div class="pr-item"><strong>Fastest 1K</strong><span>4'58"</span></div>
+              <div class="pr-item"><strong>Fastest 5K</strong><span>29:48</span></div>
+              <div class="pr-item"><strong>Longest run</strong><span>8.6 km</span></div>
+              <div class="pr-item"><strong>Most active week</strong><span>24.6 km</span></div>
+            </div>
+          </div>
+
+          <div class="challenge-card">
+            <h3>Run 50K This Month</h3>
+            <div class="challenge-meta">24.6 km / 50 km completed</div>
+            <div class="progress-track"><div class="progress-fill" style="width:49%;"></div></div>
+            <button class="primary-inline" data-go="progress">Join Challenge</button>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="community">
+          <div class="feed-card">
+            <div class="feed-top">
+              <div class="feed-avatar">M</div>
+              <div>
+                <div class="feed-name">Maya Putri</div>
+                <div class="feed-title">Morning Easy Run · 5.8 km · 35 min · 6'02"/km</div>
+              </div>
+            </div>
+            <div class="mini-route">
+              <svg class="route-svg" viewBox="0 0 360 128">
+                <path class="route-line" d="M30 94 C72 38, 108 50, 144 69 S218 98, 248 43 S302 35, 331 58" />
+              </svg>
+            </div>
+            <p class="caption">Slow pace, good weather, perfect start.</p>
+            <div class="feed-actions">
+              <button>Give Kudos</button>
+              <button>Comment</button>
+              <button>Share</button>
+            </div>
+          </div>
+
+          <div class="feed-card">
+            <div class="feed-top">
+              <div class="feed-avatar">R</div>
+              <div>
+                <div class="feed-name">Raka Aditya</div>
+                <div class="feed-title">Weekend Long Run · 10.2 km · 1h 06m</div>
+              </div>
+            </div>
+            <p class="caption">Finally hit double digit distance. Legs tired, mood happy.</p>
+            <div class="feed-actions">
+              <button>Give Kudos</button>
+              <button>Comment</button>
+              <button>Share</button>
+            </div>
+          </div>
+
+          <div class="empty">
+            <h3>Run with others</h3>
+            <p>Follow friends and see their running activities here.</p>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="profile">
+          <div class="profile-head">
+            <div class="profile-photo">A</div>
+            <h2 class="profile-name">Alex Runner</h2>
+            <p class="profile-bio">Running to stay consistent.<br />Jakarta, Indonesia</p>
+          </div>
+
+          <div class="profile-stats">
+            <div class="profile-stat"><strong>124</strong><span>runs</span></div>
+            <div class="profile-stat"><strong>642</strong><span>km</span></div>
+            <div class="profile-stat"><strong>58h</strong><span>time</span></div>
+            <div class="profile-stat"><strong>18</strong><span>badges</span></div>
+          </div>
+
+          <div class="card white">
+            <h2 class="section-title">Activity History</h2>
+            <div class="pr-list">
+              <div class="pr-item"><strong>Morning Run</strong><span>5.20 km</span></div>
+              <div class="pr-item"><strong>Easy Recovery</strong><span>3.40 km</span></div>
+              <div class="pr-item"><strong>Weekend Long Run</strong><span>8.60 km</span></div>
+            </div>
+          </div>
+
+          <div class="card success">
+            <h2 class="section-title">Badges Collection</h2>
+            <div class="badges">
+              <div class="badge green"><span class="green-dot"></span>Starter 5K</div>
+              <div class="badge blue"><span class="check-icon">✓</span>GPS Streak</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="cta-row">
+          <button class="round-action" aria-label="GPS">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z" stroke="currentColor" stroke-width="2" />
+              <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2" />
+            </svg>
+          </button>
+          <button class="primary-cta" id="primaryCta">Get Started</button>
+        </div>
+
+        <nav class="bottom-nav">
+          <button class="nav-btn active" data-nav="home">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Home
+          </button>
+          <button class="nav-btn" data-nav="record">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Record
+          </button>
+          <button class="nav-btn" data-nav="progress">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 19V9m7 10V5m7 14v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Progress
+          </button>
+          <button class="nav-btn" data-nav="community">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.5 20c.7-3.4 2.4-5 4.5-5s3.8 1.6 4.5 5M11.5 20c.7-3.4 2.4-5 4.5-5s3.8 1.6 4.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Social
+          </button>
+          <button class="nav-btn" data-nav="profile">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Profile
+          </button>
+        </nav>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    const app = document.getElementById("app");
+    const phone = document.getElementById("phone");
+    const primaryCta = document.getElementById("primaryCta");
+    const headerTitle = document.getElementById("headerTitle");
+    const headerSubtitle = document.getElementById("headerSubtitle");
+    const screens = [...document.querySelectorAll(".screen")];
+    const navButtons = [...document.querySelectorAll(".nav-btn")];
+    const setButtons = [...document.querySelectorAll(".set-btn")];
+    const timelineRows = [...document.querySelectorAll(".stop-row")];
+
+    let currentScreen = "onboarding";
+    let currentStopIndex = 0;
+    let rideJoined = false;
+    let runStarted = false;
+
+    const screenMeta = {
+      onboarding: {
+        title: "Move forward with every run.",
+        subtitle: "Track your route, pace, distance, and progress with RunUp.",
+        cta: "Get Started"
+      },
+      home: {
+        title: "Ready for your next run?",
+        subtitle: "Home feels like a personal running command center.",
+        cta: "Start Running"
+      },
+      record: {
+        title: "Record your run.",
+        subtitle: "Clear numbers, calm GPS status, and one-tap controls.",
+        cta: "Start Run"
+      },
+      summary: {
+        title: "Great effort today.",
+        subtitle: "Save the activity or share it with your running community.",
+        cta: "Save Activity"
+      },
+      progress: {
+        title: "Your Progress",
+        subtitle: "See consistency, pace improvement, streaks, and personal records.",
+        cta: "Explore Challenges"
+      },
+      community: {
+        title: "Community",
+        subtitle: "Supportive running updates without feeling too crowded.",
+        cta: "Find Friends"
+      },
+      profile: {
+        title: "Your running archive.",
+        subtitle: "Stats, badges, personal records, and activity history.",
+        cta: "Edit Profile"
+      }
+    };
+
+    function showScreen(name) {
+      currentScreen = name;
+
+      screens.forEach(screen => {
+        screen.classList.toggle("active", screen.dataset.screen === name);
+      });
+
+      navButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.nav === name);
+      });
+
+      app.classList.toggle("is-onboarding", name === "onboarding");
+
+      headerTitle.textContent = screenMeta[name].title;
+      headerSubtitle.textContent = screenMeta[name].subtitle;
+      primaryCta.textContent = screenMeta[name].cta;
+
+      if (name === "record" && runStarted) {
+        primaryCta.textContent = "Finish Run";
+      }
+    }
+
+    function pressButton(button, duration = 120) {
+      button.classList.add("pressed");
+      window.setTimeout(() => button.classList.remove("pressed"), duration);
+    }
+
+    function flashSuccess() {
+      phone.classList.remove("flash-success");
+      void phone.offsetWidth;
+      phone.classList.add("flash-success");
+      window.setTimeout(() => phone.classList.remove("flash-success"), 650);
+    }
+
+    function renderTimeline() {
+      timelineRows.forEach((row, index) => {
+        row.classList.remove("completed", "active", "upcoming");
+
+        if (index < currentStopIndex) {
+          row.classList.add("completed");
+        } else if (index === currentStopIndex) {
+          row.classList.add("active");
+        } else {
+          row.classList.add("upcoming");
+        }
+      });
+
+      if (currentStopIndex === 3) {
+        primaryCta.textContent = "Finish Run";
+      }
+    }
+
+    function advanceStop() {
+      if (currentStopIndex < timelineRows.length - 1) {
+        currentStopIndex += 1;
+        renderTimeline();
+      }
+    }
+
+    navButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        showScreen(button.dataset.nav);
+      });
+    });
+
+    setButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        button.textContent = "Set ✓";
+        pressButton(button, 100);
+      });
+    });
+
+    timelineRows.forEach(row => {
+      row.querySelector(".dot").addEventListener("click", () => {
+        const index = Number(row.dataset.index);
+        if (index === currentStopIndex + 1) {
+          advanceStop();
+        }
+      });
+    });
+
+    primaryCta.addEventListener("click", () => {
+      pressButton(primaryCta, 120);
+
+      if (currentScreen === "onboarding") {
+        showScreen("home");
+        return;
+      }
+
+      if (currentScreen === "home") {
+        showScreen("record");
+        return;
+      }
+
+      if (currentScreen === "record") {
+        if (!runStarted) {
+          runStarted = true;
+          currentStopIndex = 0;
+          renderTimeline();
+          primaryCta.textContent = "Next Stop";
+          flashSuccess();
+          return;
+        }
+
+        if (currentStopIndex < 3) {
+          advanceStop();
+          primaryCta.textContent = currentStopIndex === 3 ? "Finish Run" : "Next Stop";
+          return;
+        }
+
+        showScreen("summary");
+        flashSuccess();
+        return;
+      }
+
+      if (currentScreen === "summary") {
+        rideJoined = true;
+        flashSuccess();
+        primaryCta.textContent = rideJoined ? "Saved ✓" : "Save Activity";
+        return;
+      }
+
+      flashSuccess();
+    });
+
+    document.querySelectorAll(".mode").forEach(mode => {
+      mode.addEventListener("click", () => {
+        const group = mode.parentElement.querySelectorAll(".mode");
+        group.forEach(item => item.classList.remove("is-active"));
+        mode.classList.add("is-active");
+      });
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(item => item.classList.remove("is-active"));
+        tab.classList.add("is-active");
+      });
+    });
+
+    showScreen("onboarding");
+    renderTimeline();
+  </script>
+</body>
+</html>

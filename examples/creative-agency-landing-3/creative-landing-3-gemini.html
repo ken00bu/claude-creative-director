@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morph Creative Agency — Palangkaraya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink-blue: #1A1AF2;
+            --paper-gray: #EBEAEA;
+            --hover-fill: rgba(26, 26, 242, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--paper-gray);
+            font-family: 'Inter', sans-serif;
+            color: var(--ink-blue);
+            min-height: 100vh;
+            position: relative;
+            padding: 64px 24px;
+            overflow-x: hidden;
+        }
+
+        /* Irregular Outline Grid Field */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 14% 22% 11% 18% 15% 20%;
+            pointer-events: none;
+        }
+
+        .grid-cell {
+            border-right: 1px solid var(--ink-blue);
+            border-bottom: 1px solid var(--ink-blue);
+            pointer-events: auto;
+            transition: background-color 400ms ease-out;
+        }
+
+        /* Main Floating Browser Window Frame */
+        .browser-window {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--paper-gray);
+            border: 1px solid var(--ink-blue);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        /* Top Nav Bar */
+        .browser-header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--ink-blue);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .traffic-lights {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border: 1px solid var(--ink-blue);
+            border-radius: 50%;
+        }
+
+        .nav-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-pill {
+            display: inline-block;
+            padding: 6px 14px;
+            border: 1px solid var(--ink-blue);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--ink-blue);
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 150ms, color 150ms;
+        }
+
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--ink-blue);
+            color: var(--paper-gray);
+        }
+
+        .header-center {
+            text-align: center;
+        }
+
+        .brand-headline {
+            font-size: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.95;
+            letter-spacing: -0.01em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-headline span:nth-child(2) {
+            margin-left: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .language-switcher {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .lang-code {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 150ms, font-weight 150ms;
+            padding: 2px 4px;
+        }
+
+        .lang-code.active {
+            opacity: 1;
+            font-weight: 900;
+            border-bottom: 1px solid var(--ink-blue);
+        }
+
+        /* Window Content Sections */
+        .window-content {
+            padding: 0;
+        }
+
+        .section-block {
+            border-bottom: 1px solid var(--ink-blue);
+            padding: 64px 40px;
+        }
+
+        .section-block:last-child {
+            border-bottom: none;
+        }
+
+        /* Structural Grid Elements */
+        .hero-box {
+            border: 1px solid var(--ink-blue);
+            padding: 40px;
+            margin-bottom: 32px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(32px, 5vw, 54px);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+            border-left: 4px solid var(--ink-blue);
+            padding-left: 12px;
+            line-height: 1;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.0;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.45;
+            margin-bottom: 16px;
+        }
+
+        p.hero-desc {
+            font-size: 20px;
+            line-height: 1.4;
+            max-width: 800px;
+        }
+
+        p.rhythm-lead {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        /* Buttons & CTAs */
+        .cta-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: 1px solid var(--ink-blue);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--ink-blue);
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 150ms, color 150ms;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-fill);
+        }
+
+        .btn.filled {
+            background-color: var(--ink-blue);
+            color: var(--paper-gray);
+        }
+
+        .btn.filled:hover {
+            background-color: transparent;
+            color: var(--ink-blue);
+        }
+
+        /* Custom Two-Column Layout */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        /* Services Grid */
+        .services-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            border-top: 1px solid var(--ink-blue);
+        }
+
+        .service-row {
+            display: grid;
+            grid-template-columns: 30% 70%;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--ink-blue);
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .project-card {
+            border: 1px solid var(--ink-blue);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+            transition: background-color 200ms;
+        }
+
+        .project-card:hover {
+            background-color: var(--hover-fill);
+        }
+
+        .project-meta {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--ink-blue);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+        /* Process Steps */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .process-box {
+            border: 1px solid var(--ink-blue);
+            padding: 24px;
+        }
+
+        .process-num {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        /* Philosophy Callout */
+        .philosophy-banner {
+            border: 1px solid var(--ink-blue);
+            padding: 64px 40px;
+            text-align: center;
+        }
+
+        .philosophy-text {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.0;
+            letter-spacing: -0.01em;
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+        }
+
+        .keyword-strip {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .keyword-tag {
+            border: 1px solid var(--ink-blue);
+            padding: 6px 14px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Testimonials layout */
+        .testimonials-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .testimonial-card {
+            border-left: 4px solid var(--ink-blue);
+            padding: 8px 0 8px 24px;
+        }
+
+        .quote-text {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .quote-author {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+
+        /* Contact Box */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 40px;
+        }
+
+        .contact-info-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .contact-info-list li {
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Multilingual Toggle System */
+        [data-lang] {
+            display: none !important;
+        }
+
+        body.lang-id [data-lang="id"] {
+            display: block !important;
+        }
+        body.lang-id span[data-lang="id"], body.lang-id p[data-lang="id"], body.lang-id div[data-lang="id"] {
+            display: inline-block !important;
+        }
+
+        body.lang-en [data-lang="en"] {
+            display: block !important;
+        }
+        body.lang-en span[data-lang="en"], body.lang-en p[data-lang="en"], body.lang-en div[data-lang="en"] {
+            display: inline-block !important;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            .split-layout, .portfolio-grid, .testimonials-container, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .process-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .browser-header {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .header-left, .header-center, .header-right {
+                justify-content: center;
+                text-align: center;
+            }
+            .brand-headline {
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+            .service-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            body {
+                padding: 16px 8px;
+            }
+            .section-block {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body class="lang-id">
+
+    <!-- Background Blueprint Grid Pattern -->
+    <div class="grid-background" id="bgGrid"></div>
+
+    <!-- Main Floating macOS Browser window -->
+    <div class="browser-window">
+        
+        <!-- Window Frame Header Bar -->
+        <header class="browser-header">
+            <div class="header-left">
+                <div class="traffic-lights">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <nav class="nav-container">
+                    <a href="#about" class="nav-pill">About</a>
+                    <a href="#services" class="nav-pill">Services</a>
+                    <a href="#works" class="nav-pill">Works</a>
+                    <a href="#process" class="nav-pill">Process</a>
+                    <a href="#contact" class="nav-pill">Contact</a>
+                </nav>
+            </div>
+            
+            <div class="header-center">
+                <div class="brand-headline">
+                    <span>MORPH</span>
+                    <span>STUDIO</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="language-switcher">
+                    <span class="lang-code active" onclick="setLanguage('id')">ID</span>
+                    <span>·</span>
+                    <span class="lang-code" onclick="setLanguage('en')">EN</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Window Container -->
+        <main class="window-content">
+
+            <!-- 1. Hero Section -->
+            <section class="section-block" id="hero">
+                <div class="hero-box">
+                    <h1 data-lang="id">DIREKSI KREATIF UNTUK BRAND YANG MENOLAK TERLIHAT BIASA.</h1>
+                    <h1 data-lang="en">CREATIVE DIRECTION FOR BRANDS THAT REFUSE TO LOOK ORDINARY.</h1>
+                    
+                    <p class="hero-desc" data-lang="id">Morph adalah creative agency berbasis di Palangkaraya yang membantu brand membangun identitas visual, pengalaman digital, dan campaign yang berani, relevan, dan mudah diingat.</p>
+                    <p class="hero-desc" data-lang="en">Morph is a creative agency based in Palangkaraya, shaping bold visual identities, digital experiences, and campaigns for brands that want to move differently.</p>
+                    
+                    <div class="cta-group">
+                        <a href="#contact" class="btn filled" data-lang="id">Mulai Project</a>
+                        <a href="#contact" class="btn filled" data-lang="en">Start a Project</a>
+                        <a href="#works" class="btn" data-lang="id">Lihat Karya</a>
+                        <a href="#works" class="btn" data-lang="en">View Our Work</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. About Section -->
+            <section class="section-block" id="about">
+                <h2>01 / About Morph</h2>
+                <div class="split-layout">
+                    <div>
+                        <p class="rhythm-lead" data-lang="id">Kami percaya setiap brand punya bentuk, ritme, dan karakter sendiri.</p>
+                        <p class="rhythm-lead" data-lang="en">We believe every brand has a shape, rhythm, and personality.</p>
+                    </div>
+                    <div>
+                        <p data-lang="id">Didirikan pada 2024 di Palangkaraya, Morph hadir sebagai ruang eksplorasi visual, strategi desain, dan storytelling digital. Tugas kami adalah membantu memunculkannya melalui desain, konten, motion, dan pengalaman digital.</p>
+                        <p data-lang="en">Founded in 2024 in Palangkaraya, Morph was created as a space for visual exploration, strategic design, and digital storytelling. Our job is to help reveal it through design, motion, content, and interactive experiences.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Services Section -->
+            <section class="section-block" id="services">
+                <h2>02 / What We Do</h2>
+                <div class="services-list">
+                    
+                    <div class="service-row">
+                        <h3>01_Brand Identity</h3>
+                        <div>
+                            <p data-lang="id">Membangun identitas visual brand mulai dari logo, warna, tipografi, brand guideline, hingga sistem visual yang konsisten.</p>
+                            <p data-lang="en">Building visual brand identities from logos, colors, typography, brand guidelines, to consistent visual systems.</p>
+                        </div>
+                    </div>
+
+                    <div class="service-row">
+                        <h3>02_Web Design</h3>
+                        <div>
+                            <p data-lang="id">Merancang dan membangun website yang modern, responsif, cepat, dan sesuai karakter brand.</p>
+                            <p data-lang="en">Designing and building websites that are modern, responsive, fast, and tailored to the brand's character.</p>
+                        </div>
+                    </div>
+
+                    <div class="service-row">
+                        <h3>03_Social Media</h3>
+                        <div>
+                            <p data-lang="id">Membuat visual campaign, konten promosi, template feed, dan aset digital untuk kebutuhan media sosial.</p>
+                            <p data-lang="en">Creating visual campaigns, promotional content, feed templates, and digital assets for social media needs.</p>
+                        </div>
+                    </div>
+
+                    <div class="service-row">
+                        <h3>04_Campaign</h3>
+                        <div>
+                            <p data-lang="id">Membantu merancang konsep campaign, visual direction, copywriting, dan strategi komunikasi kreatif.</p>
+                            <p data-lang="en">Assisting in designing campaign concepts, visual direction, copywriting, and creative communication strategies.</p>
+                        </div>
+                    </div>
+
+                    <div class="service-row">
+                        <h3>05_Motion Assets</h3>
+                        <div>
+                            <p data-lang="id">Membuat motion graphic, poster digital, visual event, experimental graphic, dan aset promosi lainnya.</p>
+                            <p data-lang="en">Creating motion graphics, digital posters, event visuals, experimental graphics, and other promotional assets.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 4. Selected Works Section -->
+            <section class="section-block" id="works">
+                <h2>03 / Selected Works</h2>
+                <div class="portfolio-grid">
+                    
+                    <div class="project-card">
+                        <div>
+                            <h3>01 — Rimba Coffee</h3>
+                            <p data-lang="id">Brand identity dan packaging untuk coffee shop lokal dengan pendekatan natural, hangat, dan modern.</p>
+                            <p data-lang="en">Brand identity and packaging for a local coffee shop with a natural, warm, and modern approach.</p>
+                        </div>
+                        <div class="project-meta">Branding, Packaging, Social Media</div>
+                    </div>
+
+                    <div class="project-card">
+                        <div>
+                            <h3>02 — Svara Festival</h3>
+                            <p data-lang="id">Visual campaign untuk event musik independen dengan gaya ekspresif, bold typography, dan motion poster.</p>
+                            <p data-lang="en">Visual campaign for an independent music event with an expressive style, bold typography, and motion posters.</p>
+                        </div>
+                        <div class="project-meta">Campaign, Poster Design, Motion</div>
+                    </div>
+
+                    <div class="project-card">
+                        <div>
+                            <h3>03 — Kalawa Studio</h3>
+                            <p data-lang="id">Website portfolio untuk studio kreatif dengan layout editorial, clean, dan fokus pada visual storytelling.</p>
+                            <p data-lang="en">Portfolio website for a creative studio with an editorial, clean layout, focusing on visual storytelling.</p>
+                        </div>
+                        <div class="project-meta">Web Design, Development, Art Direction</div>
+                    </div>
+
+                    <div class="project-card">
+                        <div>
+                            <h3>04 — Urban Plate</h3>
+                            <p data-lang="id">Social media system untuk brand makanan modern dengan pendekatan warna kuat dan modular content layout.</p>
+                            <p data-lang="en">Social media system for a modern food brand with a strong color approach and modular content layout.</p>
+                        </div>
+                        <div class="project-meta">Social Media, Creative Direction</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 5. Process Section -->
+            <section class="section-block" id="process">
+                <h2>04 / How We Work</h2>
+                <div class="process-grid">
+                    
+                    <div class="process-box">
+                        <div class="process-num">01</div>
+                        <h3>Discover</h3>
+                        <p data-lang="id">Kami memahami brand, target audiens, masalah utama, dan arah visual yang ingin dicapai.</p>
+                        <p data-lang="en">Understanding the brand, target audience, core problems, and intended visual direction.</p>
+                    </div>
+
+                    <div class="process-box">
+                        <div class="process-num">02</div>
+                        <h3>Define</h3>
+                        <p data-lang="id">Kami menyusun strategi kreatif, moodboard, pesan utama, dan sistem visual awal.</p>
+                        <p data-lang="en">Developing creative strategies, moodboards, key messaging, and initial visual systems.</p>
+                    </div>
+
+                    <div class="process-box">
+                        <div class="process-num">03</div>
+                        <h3>Design</h3>
+                        <p data-lang="id">Kami mulai membuat visual, layout, prototype, atau aset kreatif berdasarkan arah yang sudah disepakati.</p>
+                        <p data-lang="en">Crafting visuals, layouts, prototypes, or creative assets based on the agreed direction.</p>
+                    </div>
+
+                    <div class="process-box">
+                        <div class="process-num">04</div>
+                        <h3>Deliver</h3>
+                        <p data-lang="id">Kami menyiapkan final asset, file produksi, guideline, atau website siap pakai sesuai kebutuhan project.</p>
+                        <p data-lang="en">Preparing final assets, production files, guidelines, or ready-to-use websites as needed.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 6. Philosophy Section -->
+            <section class="section-block">
+                <div class="philosophy-banner">
+                    <div class="philosophy-text" data-lang="id">"Kami tidak mendesain hanya untuk membuat sesuatu terlihat bagus. Kami mendesain untuk membentuk persepsi, membangun ingatan, dan menciptakan pengalaman yang terasa berbeda."</div>
+                    <div class="philosophy-text" data-lang="en">"We do not design just to decorate. We design to shape perception, build recognition, and create moments people remember."</div>
+                    
+                    <div class="keyword-strip">
+                        <span class="keyword-tag">Bold</span>
+                        <span class="keyword-tag">Experimental</span>
+                        <span class="keyword-tag">Strategic</span>
+                        <span class="keyword-tag">Editorial</span>
+                        <span class="keyword-tag">Digital-first</span>
+                        <span class="keyword-tag">Human-centered</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Testimonials Section -->
+            <section class="section-block">
+                <h2>05 / Testimonials</h2>
+                <div class="testimonials-container">
+                    
+                    <div class="testimonial-card">
+                        <div class="quote-text" data-lang="id">“Morph membantu kami mengubah ide yang samar menjadi identitas visual yang benar-benar terasa seperti brand kami sendiri.”</div>
+                        <div class="quote-text" data-lang="en">“Morph helped us turn a vague idea into a visual identity that actually feels like our brand.”</div>
+                        <div class="quote-author">— Andra, Founder of Rimba Coffee</div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="quote-text" data-lang="id">“Arahan desain mereka membuat campaign kami terlihat lebih percaya diri dan mudah diingat.”</div>
+                        <div class="quote-text" data-lang="en">“Their design direction made our campaign look more confident and memorable.”</div>
+                        <div class="quote-author">— Nadya, Event Director at Svara Festival</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 8. Contact Section -->
+            <section class="section-block" id="contact">
+                <h2>06 / Let's Morph Your Ideas</h2>
+                <div class="contact-grid">
+                    <div>
+                        <p class="rhythm-lead" data-lang="id">Punya ide brand, campaign, atau website? Mari kita bentuk menjadi sesuatu yang jelas, berani, dan berkesan.</p>
+                        <p class="rhythm-lead" data-lang="en">Have a brand, campaign, or website idea? Let’s shape it into something clear, bold, and memorable.</p>
+                        
+                        <div class="cta-group">
+                            <a href="mailto:hello@morph.studio" class="btn filled">Start a Project</a>
+                            <a href="mailto:hello@morph.studio" class="btn">Email Us</a>
+                            <a href="https://instagram.com/morph.studio" target="_blank" class="btn">Instagram</a>
+                            <a href="https://wa.me/#" class="btn">WhatsApp</a>
+                        </div>
+                    </div>
+                    <div>
+                        <ul class="contact-info-list">
+                            <li><strong>Email:</strong> hello@morph.studio</li>
+                            <li><strong>Instagram:</strong> @morph.studio</li>
+                            <li><strong>Location:</strong> Palangkaraya, Indonesia</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Script to handle custom interactions -->
+    <script>
+        // Multi-language system
+        function setLanguage(lang) {
+            document.body.className = 'lang-' + lang;
+            document.querySelectorAll('.lang-code').forEach(el => {
+                if(el.textContent.toLowerCase() === lang) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        // Programmatically generate irregular blueprint grid cells
+        const gridBg = document.getElementById('bgGrid');
+        const totalCells = 150; // Populate background grid
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            // Random heights for cell variety to enhance non-uniform feel
+            const randHeight = Math.floor(Math.random() * 100) + 100;
+            cell.style.height = randHeight + 'px';
+            gridBg.appendChild(cell);
+        }
+
+        // Simple smooth scroll implementation for pills
+        document.querySelectorAll('.nav-pill').forEach(pill => {
+            pill.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

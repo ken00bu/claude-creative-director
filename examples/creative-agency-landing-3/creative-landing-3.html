@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morph — Creative Agency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-blue: #1A1AF2;
+      --paper-gray: #EBEAEA;
+      --hover-fill: rgba(26, 26, 242, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper-gray);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      color: var(--ink-blue);
+      background: var(--paper-gray);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .grid-field {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      background: var(--paper-gray);
+      overflow: hidden;
+    }
+
+    .grid-cell {
+      border-right: 1px solid var(--ink-blue);
+      border-bottom: 1px solid var(--ink-blue);
+      transition: background-color 400ms ease-out;
+    }
+
+    .grid-cell:hover {
+      background: var(--hover-fill);
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      padding: 56px 7vw 72px 5vw;
+    }
+
+    .browser {
+      width: min(1320px, 88vw);
+      margin: 0 auto;
+      background: var(--paper-gray);
+      border: 1px solid var(--ink-blue);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .browser-top {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding: 16px 24px 24px;
+      border-bottom: 1px solid var(--ink-blue);
+    }
+
+    .traffic {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--ink-blue);
+      border-radius: 999px;
+    }
+
+    .nav-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .nav-pill,
+    .cta-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 7px 14px 8px;
+      border: 1px solid var(--ink-blue);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background 150ms ease-out, color 150ms ease-out;
+    }
+
+    .nav-pill.active,
+    .cta-pill.primary {
+      background: var(--ink-blue);
+      color: var(--paper-gray);
+    }
+
+    .brand-stack {
+      text-align: center;
+      line-height: 0.9;
+      font-size: clamp(52px, 8.5vw, 150px);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    .brand-stack span {
+      display: block;
+    }
+
+    .locale {
+      justify-self: end;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lang {
+      opacity: 0.5;
+      transition: opacity 150ms ease-out, font-weight 150ms ease-out;
+    }
+
+    .lang.active {
+      opacity: 1;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .window-body {
+      padding: 24px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero-box {
+      border: 1px solid var(--ink-blue);
+      padding: clamp(24px, 4vw, 56px);
+      min-height: 480px;
+      display: grid;
+      align-content: space-between;
+      gap: 64px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      max-width: 1060px;
+      font-size: clamp(52px, 9vw, 148px);
+      line-height: 0.92;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      font-size: clamp(18px, 2vw, 24px);
+      line-height: 1.28;
+      font-weight: 500;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: end;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    .box {
+      border: 1px solid var(--ink-blue);
+      padding: 24px;
+    }
+
+    .box.large {
+      min-height: 280px;
+    }
+
+    .box p {
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .box strong {
+      font-weight: 900;
+    }
+
+    .section-title {
+      font-size: clamp(42px, 7vw, 110px);
+      line-height: 0.92;
+      font-weight: 900;
+      letter-spacing: -0.055em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--ink-blue);
+      border-left: 1px solid var(--ink-blue);
+    }
+
+    .service-card,
+    .work-card,
+    .process-card,
+    .testimonial-card,
+    .keyword-card {
+      min-height: 240px;
+      padding: 24px;
+      border-right: 1px solid var(--ink-blue);
+      border-bottom: 1px solid var(--ink-blue);
+    }
+
+    .service-card h3,
+    .work-card h3,
+    .process-card h3 {
+      font-size: 24px;
+      line-height: 0.96;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .service-card p,
+    .work-card p,
+    .process-card p,
+    .testimonial-card p {
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .meta {
+      display: block;
+      margin-bottom: 24px;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      border-top: 1px solid var(--ink-blue);
+      border-left: 1px solid var(--ink-blue);
+    }
+
+    .work-card {
+      min-height: 340px;
+    }
+
+    .work-card:nth-child(1) {
+      min-height: 460px;
+    }
+
+    .work-card:nth-child(4) {
+      min-height: 420px;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--ink-blue);
+      border-left: 1px solid var(--ink-blue);
+    }
+
+    .philosophy {
+      min-height: 460px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 24px;
+    }
+
+    .philosophy-statement {
+      border: 1px solid var(--ink-blue);
+      padding: clamp(24px, 4vw, 56px);
+      display: flex;
+      align-items: center;
+    }
+
+    .philosophy-statement p {
+      font-size: clamp(42px, 6.5vw, 104px);
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    .keyword-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      border-top: 1px solid var(--ink-blue);
+      border-left: 1px solid var(--ink-blue);
+    }
+
+    .keyword-card {
+      min-height: auto;
+      padding: 18px 24px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--ink-blue);
+      border-left: 1px solid var(--ink-blue);
+    }
+
+    .testimonial-card {
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quote {
+      font-size: clamp(24px, 3vw, 44px) !important;
+      line-height: 1 !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .contact {
+      border: 1px solid var(--ink-blue);
+      padding: clamp(24px, 4vw, 56px);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: end;
+      min-height: 420px;
+    }
+
+    .contact h2 {
+      font-size: clamp(54px, 8vw, 132px);
+      line-height: 0.9;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .contact p {
+      max-width: 620px;
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .contact-list {
+      border: 1px solid var(--ink-blue);
+    }
+
+    .contact-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px;
+      border-bottom: 1px solid var(--ink-blue);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .contact-item:last-child {
+      border-bottom: 0;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      border: 1px solid var(--ink-blue);
+      padding: 18px 24px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        padding: 24px 16px 40px;
+      }
+
+      .browser {
+        width: 100%;
+      }
+
+      .browser-top {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-stack {
+        text-align: left;
+        font-size: clamp(64px, 24vw, 150px);
+      }
+
+      .locale {
+        justify-self: start;
+      }
+
+      .hero-box {
+        min-height: auto;
+      }
+
+      .hero-bottom,
+      .split,
+      .work-grid,
+      .process-grid,
+      .philosophy,
+      .testimonials,
+      .contact {
+        grid-template-columns: 1fr;
+      }
+
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-row {
+        justify-content: start;
+      }
+
+      .service-card,
+      .work-card,
+      .process-card,
+      .testimonial-card {
+        min-height: 220px;
+      }
+
+      .work-card:nth-child(1),
+      .work-card:nth-child(4) {
+        min-height: 300px;
+      }
+
+      .footer,
+      .contact-item {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-field" id="gridField" aria-hidden="true"></div>
+
+  <main class="page">
+    <section class="browser">
+      <header class="browser-top">
+        <div>
+          <div class="traffic" aria-hidden="true">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+
+          <nav class="nav-left" aria-label="Primary navigation">
+            <button class="nav-pill active" data-target="about">About</button>
+            <button class="nav-pill" data-target="services">Services</button>
+            <button class="nav-pill" data-target="work">Works</button>
+            <button class="nav-pill" data-target="contact">Contact</button>
+          </nav>
+        </div>
+
+
+
+        <div class="locale" aria-label="Language switcher">
+          <button class="lang active" data-lang-button="en">EN</button>
+          <span>·</span>
+          <button class="lang" data-lang-button="id">ID</button>
+        </div>
+      </header>
+
+      <div class="window-body">
+        <section class="hero-box" id="home">
+          <div>
+            <p class="eyebrow">Creative Agency · Palangkaraya · Est. 2024</p>
+            <h1
+              class="hero-title lang-text"
+              data-en="We morph ideas into visual experiences."
+              data-id="Kami membentuk ide menjadi pengalaman visual."
+            >
+              We morph ideas into visual experiences.
+            </h1>
+          </div>
+
+          <div class="hero-bottom">
+            <p
+              class="hero-copy lang-text"
+              data-en="Morph is a creative agency based in Palangkaraya, shaping bold visual identities, digital experiences, and campaigns for brands that want to move differently."
+              data-id="Morph adalah creative agency berbasis di Palangkaraya yang membantu brand membangun identitas visual, pengalaman digital, dan campaign yang berani, relevan, dan mudah diingat."
+            >
+              Morph is a creative agency based in Palangkaraya, shaping bold visual identities, digital experiences, and campaigns for brands that want to move differently.
+            </p>
+
+            <div class="cta-row">
+              <a class="cta-pill primary" href="#contact">Start a Project</a>
+              <a class="cta-pill" href="#work">View Our Work</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="split" id="about">
+          <div class="box large">
+            <h2 class="section-title">About Morph</h2>
+            <p
+              class="lang-text"
+              data-en="Founded in 2024 in Palangkaraya, Morph was created as a space for visual exploration, strategic design, and digital storytelling. We believe every brand has a shape, rhythm, and personality — our job is to help reveal it through design, motion, content, and interactive experiences."
+              data-id="Didirikan pada 2024 di Palangkaraya, Morph hadir sebagai ruang eksplorasi visual, strategi desain, dan storytelling digital. Kami percaya setiap brand punya bentuk, ritme, dan karakter sendiri — tugas kami adalah membantu memunculkannya melalui desain, konten, motion, dan pengalaman digital."
+            >
+              Founded in 2024 in Palangkaraya, Morph was created as a space for visual exploration, strategic design, and digital storytelling. We believe every brand has a shape, rhythm, and personality — our job is to help reveal it through design, motion, content, and interactive experiences.
+            </p>
+          </div>
+
+          <div class="box large">
+            <p>
+              <strong>Morph works for brands, local businesses, creators, event organizers, startups, and teams that need a stronger digital presence.</strong>
+              <br><br>
+              The work sits between strategy and expression: clear enough to function, bold enough to be remembered.
+            </p>
+          </div>
+        </section>
+
+        <section id="services">
+          <h2 class="section-title">What We Do</h2>
+
+          <div class="section-grid">
+            <article class="service-card">
+              <span class="meta">01 · Identity</span>
+              <h3>Brand Identity</h3>
+              <p>Logo, color, typography, brand guideline, and visual systems made to keep a brand consistent.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="meta">02 · Web</span>
+              <h3>Web Design & Development</h3>
+              <p>Modern, responsive, fast websites built around the brand’s character and communication goals.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="meta">03 · Social</span>
+              <h3>Social Media Creative</h3>
+              <p>Campaign visuals, promotional content, feed templates, and digital assets for social platforms.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="meta">04 · Campaign</span>
+              <h3>Campaign Direction</h3>
+              <p>Creative concepts, visual direction, copywriting, and communication strategy for campaigns.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="meta">05 · Motion</span>
+              <h3>Motion & Visual Assets</h3>
+              <p>Motion graphics, digital posters, event visuals, experimental graphics, and promotional assets.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="work">
+          <h2 class="section-title">Selected Works</h2>
+
+          <div class="work-grid">
+            <article class="work-card">
+              <span class="meta">01 · Branding · Packaging · Social Media</span>
+              <h3>Rimba Coffee</h3>
+              <p>Brand identity and packaging for a local coffee shop using a natural, warm, and modern visual direction.</p>
+            </article>
+
+            <article class="work-card">
+              <span class="meta">02 · Campaign · Poster Design · Motion</span>
+              <h3>Svara Festival</h3>
+              <p>Visual campaign for an independent music event with expressive typography and motion poster assets.</p>
+            </article>
+
+            <article class="work-card">
+              <span class="meta">03 · Web Design · Development · Art Direction</span>
+              <h3>Kalawa Studio</h3>
+              <p>Portfolio website for a creative studio with editorial layout, clean structure, and visual storytelling.</p>
+            </article>
+
+            <article class="work-card">
+              <span class="meta">04 · Social Media · Creative Direction</span>
+              <h3>Urban Plate</h3>
+              <p>Social media system for a modern food brand using strong color discipline and modular content layout.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="process">
+          <h2 class="section-title">How We Work</h2>
+
+          <div class="process-grid">
+            <article class="process-card">
+              <span class="meta">01</span>
+              <h3>Discover</h3>
+              <p>We understand the brand, audience, main problem, and visual direction that needs to be achieved.</p>
+            </article>
+
+            <article class="process-card">
+              <span class="meta">02</span>
+              <h3>Define</h3>
+              <p>We build the creative strategy, moodboard, main message, and early visual system.</p>
+            </article>
+
+            <article class="process-card">
+              <span class="meta">03</span>
+              <h3>Design</h3>
+              <p>We create visuals, layouts, prototypes, or campaign assets based on the agreed direction.</p>
+            </article>
+
+            <article class="process-card">
+              <span class="meta">04</span>
+              <h3>Deliver</h3>
+              <p>We prepare final assets, production files, guidelines, or ready-to-use websites for launch.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="philosophy">
+          <div class="philosophy-statement">
+            <p
+              class="lang-text"
+              data-en="We do not design just to decorate. We design to shape perception."
+              data-id="Kami tidak mendesain hanya untuk menghias. Kami mendesain untuk membentuk persepsi."
+            >
+              We do not design just to decorate. We design to shape perception.
+            </p>
+          </div>
+
+          <div class="keyword-grid">
+            <div class="keyword-card">Bold</div>
+            <div class="keyword-card">Experimental</div>
+            <div class="keyword-card">Strategic</div>
+            <div class="keyword-card">Editorial</div>
+            <div class="keyword-card">Digital-first</div>
+            <div class="keyword-card">Human-centered</div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="section-title">Testimonials</h2>
+
+          <div class="testimonials">
+            <article class="testimonial-card">
+              <p class="quote">“Morph helped us turn a vague idea into a visual identity that actually feels like our brand.”</p>
+              <p>Andra · Founder of Rimba Coffee</p>
+            </article>
+
+            <article class="testimonial-card">
+              <p class="quote">“Their design direction made our campaign look more confident and memorable.”</p>
+              <p>Nadya · Event Director at Svara Festival</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="contact" id="contact">
+          <div>
+            <h2>Let’s Morph Your Ideas</h2>
+            <p>Have a brand, campaign, or website idea? Let’s shape it into something clear, bold, and memorable.</p>
+
+            <div class="cta-row" style="justify-content:flex-start; margin-top:24px;">
+              <a class="cta-pill primary" href="mailto:hello@morph.studio">Start a Project</a>
+              <a class="cta-pill" href="mailto:hello@morph.studio">Email Us</a>
+            </div>
+          </div>
+
+          <div class="contact-list">
+            <a class="contact-item" href="mailto:hello@morph.studio">
+              <span>Email</span>
+              <span>hello@morph.studio</span>
+            </a>
+            <a class="contact-item" href="#">
+              <span>Instagram</span>
+              <span>@morph.studio</span>
+            </a>
+            <a class="contact-item" href="#">
+              <span>WhatsApp</span>
+              <span>Start Chat</span>
+            </a>
+            <div class="contact-item">
+              <span>Location</span>
+              <span>Palangkaraya, Indonesia</span>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <span>Morph Creative Agency</span>
+          <span>Palangkaraya · Est. 2024</span>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const gridField = document.getElementById("gridField");
+
+    function createIrregularGrid() {
+      gridField.innerHTML = "";
+
+      const cols = window.innerWidth < 720 ? 5 : 9;
+      const rows = window.innerHeight < 720 ? 7 : 8;
+
+      const colPattern = [0.8, 1.15, 0.92, 1.28, 0.74, 1.05, 1.32, 0.88, 1.1];
+      const rowPattern = [1.18, 0.76, 1.32, 0.9, 1.08, 0.82, 1.24, 0.7];
+
+      gridField.style.gridTemplateColumns = Array.from({ length: cols }, (_, i) => `${colPattern[i % colPattern.length]}fr`).join(" ");
+      gridField.style.gridTemplateRows = Array.from({ length: rows }, (_, i) => `${rowPattern[i % rowPattern.length]}fr`).join(" ");
+
+      for (let i = 0; i < cols * rows; i++) {
+        const cell = document.createElement("div");
+        cell.className = "grid-cell";
+        cell.dataset.cellId = `cell-${i}`;
+        gridField.appendChild(cell);
+      }
+    }
+
+    createIrregularGrid();
+    window.addEventListener("resize", createIrregularGrid);
+
+    const navPills = document.querySelectorAll(".nav-pill");
+
+    navPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        navPills.forEach((item) => item.classList.remove("active"));
+        pill.classList.add("active");
+
+        const target = document.getElementById(pill.dataset.target);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    const langButtons = document.querySelectorAll("[data-lang-button]");
+    const langTexts = document.querySelectorAll(".lang-text");
+
+    langButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const lang = button.dataset.langButton;
+
+        langButtons.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+
+        langTexts.forEach((text) => {
+          if (text.dataset[lang]) {
+            text.textContent = text.dataset[lang];
+          }
+        });
+
+        document.documentElement.lang = lang === "id" ? "id" : "en";
+      });
+    });
+  </script>
+</body>
+</html>

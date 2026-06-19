@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Orbital Gallery</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --ink: #0A0A0A;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Mono", monospace;
+      overflow: hidden;
+    }
+
+    .top-title {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .orbital-stage {
+      position: fixed;
+      inset: 64px 108px 48px;
+      overflow: hidden;
+      perspective: 900px;
+      background: #FFFFFF;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .orbital-stage.dragging {
+      cursor: grabbing;
+    }
+
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .photo-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--w);
+      height: var(--h);
+      padding: 0;
+      margin: 0;
+      border: 1px solid var(--ink);
+      border-radius: 1px;
+      background: #FFFFFF;
+      overflow: hidden;
+      cursor: pointer;
+      transform-origin: center;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 50%;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transform: translateY(-50%);
+    }
+
+    .side-menu.left {
+      left: 24px;
+      align-items: flex-start;
+    }
+
+    .side-menu.right {
+      right: 24px;
+      align-items: flex-end;
+    }
+
+    .chip {
+      appearance: none;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--ink);
+      padding: 8px 16px;
+      min-width: 112px;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .chip:hover {
+      background: var(--ink);
+      color: #FFFFFF;
+    }
+
+    .chip.active {
+      border-width: 2px;
+      padding: 7px 15px;
+    }
+
+    .chip:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .chip:disabled:hover {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .range-control,
+    .select-control {
+      width: 112px;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      padding: 8px;
+      background: #FFFFFF;
+    }
+
+    .range-label,
+    .select-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .range-input {
+      width: 100%;
+      display: block;
+      accent-color: var(--ink);
+      cursor: pointer;
+    }
+
+    .select-input {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--ink);
+      border-radius: 1px;
+      background: #FFFFFF;
+      color: var(--ink);
+      font: inherit;
+      font-size: 9px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    .legal {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 60;
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .upload-input {
+      display: none;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      padding: 56px 24px;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-frame {
+      position: relative;
+      width: min(88vw, 1100px);
+      height: min(78vh, 780px);
+      border: 1px solid var(--ink);
+      border-radius: 1px;
+      background: #FFFFFF;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .lightbox-frame img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 230;
+      appearance: none;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: #FFFFFF;
+      color: var(--ink);
+      padding: 8px 16px;
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .lightbox-close:hover {
+      background: var(--ink);
+      color: #FFFFFF;
+    }
+
+    .lightbox-caption {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      z-index: 230;
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.65;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status {
+      position: fixed;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .status.show {
+      opacity: 0.75;
+    }
+
+    @media (max-width: 760px) {
+      .orbital-stage {
+        inset: 64px 16px 206px;
+      }
+
+      .side-menu {
+        top: auto;
+        bottom: 42px;
+        transform: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: calc(50vw - 20px);
+      }
+
+      .side-menu.left {
+        left: 16px;
+        justify-content: flex-start;
+      }
+
+      .side-menu.right {
+        right: 16px;
+        justify-content: flex-end;
+      }
+
+      .chip {
+        min-width: auto;
+        padding: 8px 12px;
+        font-size: 10px;
+      }
+
+      .chip.active {
+        padding: 7px 11px;
+      }
+
+      .range-control,
+      .select-control {
+        width: 132px;
+      }
+
+      .legal {
+        width: 92vw;
+        text-align: center;
+        white-space: normal;
+        line-height: 1.4;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="status" id="status">READY</div>
+
+  <main class="orbital-stage" id="stage">
+    <div class="empty-state" id="emptyState">LOADING ORBIT</div>
+  </main>
+
+  <nav class="side-menu left">
+    <button class="chip" id="handsFreeBtn" type="button">HANDS FREE?</button>
+
+    <label class="chip" for="uploadInput">ADD IMAGE</label>
+    <input class="upload-input" id="uploadInput" type="file" accept="image/png,image/jpeg" />
+
+    <label class="chip" for="audioInput">ADD AUDIO</label>
+    <input class="upload-input" id="audioInput" type="file" accept="audio/*" />
+
+    <button class="chip" id="playAudioBtn" type="button" disabled>PLAY AUDIO</button>
+    <button class="chip" id="refreshBtn" type="button">REFRESH</button>
+  </nav>
+
+  <nav class="side-menu right">
+    <button class="chip" id="zoomInBtn" type="button">ZOOM +</button>
+    <button class="chip" id="zoomOutBtn" type="button">ZOOM -</button>
+    <button class="chip" id="resetBtn" type="button">RESET</button>
+
+    <div class="range-control">
+      <div class="range-label">
+        <span>SENS</span>
+        <span id="sensitivityValue">100%</span>
+      </div>
+      <input
+        class="range-input"
+        id="sensitivitySlider"
+        type="range"
+        min="0.4"
+        max="2"
+        step="0.05"
+        value="1"
+      />
+    </div>
+
+    <div class="range-control">
+      <div class="range-label">
+        <span>PULSE</span>
+        <span id="pulseValue">60%</span>
+      </div>
+      <input
+        class="range-input"
+        id="pulseSlider"
+        type="range"
+        min="0"
+        max="1.5"
+        step="0.05"
+        value="0.6"
+      />
+    </div>
+
+    <div class="select-control">
+      <div class="select-label">
+        <span>AUDIO</span>
+        <span id="audioStatus">NONE</span>
+      </div>
+      <select class="select-input" id="audioSelect" disabled>
+        <option>NO AUDIO</option>
+      </select>
+    </div>
+  </nav>
+
+  <div class="legal">© 2026 PRIVATE GALLERY LTD. LOCAL IMAGE ORBIT. AUDIO VISUALIZER MODE</div>
+
+  <section class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="closeLightbox" type="button">CLOSE</button>
+
+    <div class="lightbox-frame" id="lightboxFrame">
+      <img id="lightboxImage" alt="" />
+    </div>
+
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </section>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const emptyState = document.getElementById("emptyState");
+
+    const handsFreeBtn = document.getElementById("handsFreeBtn");
+    const uploadInput = document.getElementById("uploadInput");
+    const audioInput = document.getElementById("audioInput");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const sensitivitySlider = document.getElementById("sensitivitySlider");
+    const sensitivityValue = document.getElementById("sensitivityValue");
+
+    const pulseSlider = document.getElementById("pulseSlider");
+    const pulseValue = document.getElementById("pulseValue");
+
+    const audioSelect = document.getElementById("audioSelect");
+    const playAudioBtn = document.getElementById("playAudioBtn");
+    const audioStatus = document.getElementById("audioStatus");
+
+    const statusEl = document.getElementById("status");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxCaption = document.getElementById("lightboxCaption");
+    const closeLightbox = document.getElementById("closeLightbox");
+    const lightboxFrame = document.getElementById("lightboxFrame");
+
+    let images = [];
+    let audioFiles = [];
+    let selectedAudio = null;
+    let cards = [];
+
+    let baseRadius = 300;
+    let radius = 300;
+    let camera = 900;
+
+    let zoom = 1;
+    const minZoom = 0.55;
+    const maxZoom = 2.4;
+
+    let isPressed = false;
+    let isDragging = false;
+
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    let grabbedGlobePoint = null;
+    let startOrientation = quatIdentity();
+
+    let pressedImage = null;
+
+    let isHandsFree = false;
+    let rafId = null;
+
+    let rotateSensitivity = 1;
+    let pulseStrength = 0.6;
+
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    const dragThreshold = 5;
+
+    let orientation = quatIdentity();
+
+    let lastGlobePoint = null;
+    let lastMoveTime = 0;
+
+    let inertiaAxis = {
+      x: 0,
+      y: 1,
+      z: 0
+    };
+
+    let inertiaSpeed = 0;
+
+    const inertiaDamping = 0.94;
+    const maxInertiaSpeed = 0.08;
+
+    const audioElement = new Audio();
+    audioElement.crossOrigin = "anonymous";
+    audioElement.preload = "auto";
+
+    let audioContext = null;
+    let analyser = null;
+    let sourceNode = null;
+    let frequencyData = null;
+    let smoothedEnergy = 0;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function showStatus(text) {
+      statusEl.textContent = text;
+      statusEl.classList.add("show");
+
+      window.clearTimeout(showStatus.timer);
+      showStatus.timer = window.setTimeout(() => {
+        statusEl.classList.remove("show");
+      }, 1400);
+    }
+
+    function updateStageSize() {
+      const rect = stage.getBoundingClientRect();
+
+      baseRadius = Math.max(
+        140,
+        Math.min(rect.width * 0.34, rect.height * 0.42, 360)
+      );
+
+      radius = baseRadius * zoom;
+      camera = baseRadius * 3.25;
+    }
+
+    function setZoom(nextZoom) {
+      zoom = clamp(nextZoom, minZoom, maxZoom);
+      updateStageSize();
+      showStatus(`ZOOM ${Math.round(zoom * 100)}%`);
+    }
+
+    function vecNormalize(v) {
+      const length = Math.hypot(v.x, v.y, v.z) || 1;
+
+      return {
+        x: v.x / length,
+        y: v.y / length,
+        z: v.z / length
+      };
+    }
+
+    function vecDot(a, b) {
+      return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    function vecCross(a, b) {
+      return {
+        x: a.y * b.z - a.z * b.y,
+        y: a.z * b.x - a.x * b.z,
+        z: a.x * b.y - a.y * b.x
+      };
+    }
+
+    function quatIdentity() {
+      return {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1
+      };
+    }
+
+    function quatNormalize(q) {
+      const length = Math.hypot(q.x, q.y, q.z, q.w) || 1;
+
+      return {
+        x: q.x / length,
+        y: q.y / length,
+        z: q.z / length,
+        w: q.w / length
+      };
+    }
+
+    function quatMultiply(a, b) {
+      return {
+        w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+        x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+        y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+        z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w
+      };
+    }
+
+    function quatFromAxisAngle(axis, angle) {
+      const normalized = vecNormalize(axis);
+      const half = angle / 2;
+      const sin = Math.sin(half);
+
+      return quatNormalize({
+        x: normalized.x * sin,
+        y: normalized.y * sin,
+        z: normalized.z * sin,
+        w: Math.cos(half)
+      });
+    }
+
+    function quatFromVectors(from, to) {
+      const axis = vecCross(from, to);
+      const dot = clamp(vecDot(from, to), -1, 1);
+
+      if (Math.hypot(axis.x, axis.y, axis.z) < 0.000001) {
+        return quatIdentity();
+      }
+
+      const angle = Math.acos(dot) * rotateSensitivity;
+
+      return quatFromAxisAngle(axis, angle);
+    }
+
+    function updateInertia(from, to) {
+      const axis = vecCross(from, to);
+      const axisLength = Math.hypot(axis.x, axis.y, axis.z);
+
+      if (axisLength < 0.000001) return;
+
+      const now = performance.now();
+      const dt = Math.max(8, now - lastMoveTime);
+
+      const dot = clamp(vecDot(from, to), -1, 1);
+      const angle = Math.acos(dot) * rotateSensitivity;
+
+      inertiaAxis = vecNormalize(axis);
+
+      inertiaSpeed = clamp(
+        angle * (16.67 / dt),
+        0,
+        maxInertiaSpeed
+      );
+
+      lastMoveTime = now;
+    }
+
+    function rotateVectorByQuat(v, q) {
+      const x = v.x;
+      const y = v.y;
+      const z = v.z;
+
+      const qx = q.x;
+      const qy = q.y;
+      const qz = q.z;
+      const qw = q.w;
+
+      const tx = 2 * (qy * z - qz * y);
+      const ty = 2 * (qz * x - qx * z);
+      const tz = 2 * (qx * y - qy * x);
+
+      return {
+        x: x + qw * tx + (qy * tz - qz * ty),
+        y: y + qw * ty + (qz * tx - qx * tz),
+        z: z + qw * tz + (qx * ty - qy * tx)
+      };
+    }
+
+    function pointerToGlobePoint(clientX, clientY) {
+      const rect = stage.getBoundingClientRect();
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const x = (clientX - centerX) / radius;
+      const y = (clientY - centerY) / radius;
+
+      const lengthSq = x * x + y * y;
+
+      if (lengthSq <= 1) {
+        return vecNormalize({
+          x,
+          y,
+          z: Math.sqrt(1 - lengthSq)
+        });
+      }
+
+      return vecNormalize({
+        x,
+        y,
+        z: 0
+      });
+    }
+
+    function createBasePoint(index, total) {
+      const y = 1 - 2 * ((index + 0.5) / total);
+      const orbitRadius = Math.sqrt(1 - y * y);
+      const phi = index * goldenAngle;
+
+      return {
+        x: Math.cos(phi) * orbitRadius,
+        y,
+        z: Math.sin(phi) * orbitRadius
+      };
+    }
+
+    function cardSize(index) {
+      const pattern = index % 6;
+
+      if (pattern === 0) return { w: 86, h: 118 };
+      if (pattern === 1) return { w: 124, h: 84 };
+      if (pattern === 2) return { w: 98, h: 98 };
+      if (pattern === 3) return { w: 76, h: 108 };
+      if (pattern === 4) return { w: 138, h: 92 };
+
+      return { w: 92, h: 126 };
+    }
+
+    function clearCards() {
+      cards.forEach((card) => card.el.remove());
+      cards = [];
+    }
+
+    function buildSphere() {
+      clearCards();
+      updateStageSize();
+
+      emptyState.textContent = images.length ? "" : "ADD IMAGE TO START THE ORBIT";
+      emptyState.style.display = images.length ? "none" : "grid";
+
+      images.forEach((image, index) => {
+        const size = cardSize(index);
+
+        const button = document.createElement("button");
+        button.className = "photo-card";
+        button.type = "button";
+        button.style.setProperty("--w", `${size.w}px`);
+        button.style.setProperty("--h", `${size.h}px`);
+        button.setAttribute("aria-label", `Open ${image.name}`);
+
+        const img = document.createElement("img");
+        img.src = image.url;
+        img.alt = image.name;
+        img.loading = "eager";
+
+        button.appendChild(img);
+        stage.appendChild(button);
+
+        const base = createBasePoint(index, images.length);
+        const tilt = ((index * 37) % 34) - 17;
+
+        cards.push({
+          el: button,
+          image,
+          base,
+          tilt,
+          audioRatio: (index * 0.61803398875) % 1
+        });
+      });
+    }
+
+    async function setupAudioGraph() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (!sourceNode) {
+        sourceNode = audioContext.createMediaElementSource(audioElement);
+
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 1024;
+        analyser.smoothingTimeConstant = 0.76;
+
+        sourceNode.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        frequencyData = new Uint8Array(analyser.frequencyBinCount);
+      }
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+    }
+
+    function updateAudioEnergy() {
+      if (!analyser || !frequencyData || audioElement.paused) {
+        smoothedEnergy *= 0.9;
+        return;
+      }
+
+      analyser.getByteFrequencyData(frequencyData);
+
+      let sum = 0;
+      const limit = Math.min(160, frequencyData.length);
+
+      for (let i = 0; i < limit; i++) {
+        sum += frequencyData[i];
+      }
+
+      const targetEnergy = sum / limit / 255;
+      smoothedEnergy += (targetEnergy - smoothedEnergy) * 0.25;
+    }
+
+    function getCardAudioScale(card) {
+      if (!frequencyData || audioElement.paused) {
+        return 1 + smoothedEnergy * pulseStrength * 0.18;
+      }
+
+      const index = clamp(
+        Math.floor(card.audioRatio * frequencyData.length),
+        0,
+        frequencyData.length - 1
+      );
+
+      const localEnergy = frequencyData[index] / 255;
+      const pulse = localEnergy * pulseStrength * 0.55;
+      const globalPulse = smoothedEnergy * pulseStrength * 0.22;
+
+      return 1 + pulse + globalPulse;
+    }
+
+    function renderSphere() {
+      const rect = stage.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      updateAudioEnergy();
+
+      if (isHandsFree && !isPressed) {
+        const autoQuat = quatFromAxisAngle(
+          {
+            x: 0.18,
+            y: 1,
+            z: 0.08
+          },
+          0.0032 + smoothedEnergy * 0.004
+        );
+
+        orientation = quatNormalize(quatMultiply(autoQuat, orientation));
+      }
+
+      if (!isPressed && !isHandsFree && inertiaSpeed > 0.00001) {
+        const inertiaQuat = quatFromAxisAngle(inertiaAxis, inertiaSpeed);
+
+        orientation = quatNormalize(
+          quatMultiply(inertiaQuat, orientation)
+        );
+
+        inertiaSpeed *= inertiaDamping;
+      }
+
+      for (const card of cards) {
+        const rotatedUnit = rotateVectorByQuat(card.base, orientation);
+
+        const rotated = {
+          x: rotatedUnit.x * radius,
+          y: rotatedUnit.y * radius,
+          z: rotatedUnit.z * radius
+        };
+
+        const perspective = camera / (camera - rotated.z);
+
+        const screenX = centerX + rotated.x * perspective;
+        const screenY = centerY + rotated.y * perspective;
+
+        const depth = Math.max(0, Math.min(1, (rotated.z + radius) / (radius * 2)));
+        const opacity = 0.35 + depth * 0.65;
+        const baseScale = perspective * (0.82 + depth * 0.24);
+        const audioScale = getCardAudioScale(card);
+        const scale = baseScale * audioScale;
+        const zIndex = Math.round(depth * 1000);
+
+        card.el.style.opacity = opacity.toFixed(3);
+        card.el.style.zIndex = zIndex;
+        card.el.style.transform =
+          `translate(${screenX}px, ${screenY}px) ` +
+          `translate(-50%, -50%) ` +
+          `rotate(${card.tilt}deg) ` +
+          `scale(${scale})`;
+      }
+
+      rafId = requestAnimationFrame(renderSphere);
+    }
+
+    function findCardElement(target) {
+      return target.closest ? target.closest(".photo-card") : null;
+    }
+
+    function findCardData(cardElement) {
+      return cards.find((card) => card.el === cardElement) || null;
+    }
+
+    function startPointer(event) {
+      if (lightbox.classList.contains("open")) return;
+
+      isPressed = true;
+      isDragging = false;
+      isHandsFree = false;
+      inertiaSpeed = 0;
+
+      handsFreeBtn.classList.remove("active");
+
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+
+      grabbedGlobePoint = pointerToGlobePoint(event.clientX, event.clientY);
+      lastGlobePoint = grabbedGlobePoint;
+      lastMoveTime = performance.now();
+
+      startOrientation = { ...orientation };
+
+      const cardElement = findCardElement(event.target);
+      pressedImage = cardElement ? findCardData(cardElement) : null;
+
+      stage.classList.add("dragging");
+      stage.setPointerCapture(event.pointerId);
+    }
+
+    function movePointer(event) {
+      if (!isPressed) return;
+
+      const dx = event.clientX - dragStartX;
+      const dy = event.clientY - dragStartY;
+      const distance = Math.hypot(dx, dy);
+
+      if (distance > dragThreshold) {
+        isDragging = true;
+        pressedImage = null;
+      }
+
+      if (!isDragging || !grabbedGlobePoint) return;
+
+      const currentGlobePoint = pointerToGlobePoint(event.clientX, event.clientY);
+
+      if (lastGlobePoint) {
+        updateInertia(lastGlobePoint, currentGlobePoint);
+      }
+
+      const pullRotation = quatFromVectors(grabbedGlobePoint, currentGlobePoint);
+
+      orientation = quatNormalize(
+        quatMultiply(pullRotation, startOrientation)
+      );
+
+      lastGlobePoint = currentGlobePoint;
+    }
+
+    function endPointer(event) {
+      if (!isPressed) return;
+
+      if (!isDragging && pressedImage) {
+        openCloseUp(pressedImage.image);
+      }
+
+      isPressed = false;
+      isDragging = false;
+
+      grabbedGlobePoint = null;
+      lastGlobePoint = null;
+      pressedImage = null;
+
+      stage.classList.remove("dragging");
+
+      try {
+        stage.releasePointerCapture(event.pointerId);
+      } catch (_) {}
+    }
+
+    async function loadImages() {
+      const response = await fetch("/api/images");
+
+      if (!response.ok) {
+        throw new Error(`Image API failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      images = Array.isArray(data.images) ? data.images : [];
+      buildSphere();
+    }
+
+    async function loadAudioFiles(preferredUrl = null) {
+      const response = await fetch("/api/audio");
+
+      if (!response.ok) {
+        throw new Error(`Audio API failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      audioFiles = Array.isArray(data.audio) ? data.audio : [];
+
+      audioSelect.innerHTML = "";
+
+      if (!audioFiles.length) {
+        selectedAudio = null;
+        audioSelect.disabled = true;
+        playAudioBtn.disabled = true;
+        audioStatus.textContent = "NONE";
+        playAudioBtn.textContent = "PLAY AUDIO";
+
+        const option = document.createElement("option");
+        option.textContent = "NO AUDIO";
+        audioSelect.appendChild(option);
+        return;
+      }
+
+      audioSelect.disabled = false;
+      playAudioBtn.disabled = false;
+      audioStatus.textContent = `${audioFiles.length}`;
+
+      for (const file of audioFiles) {
+        const option = document.createElement("option");
+        option.value = file.url;
+        option.textContent = file.name;
+        audioSelect.appendChild(option);
+      }
+
+      const currentUrl = preferredUrl || (selectedAudio && selectedAudio.url);
+      const nextAudio =
+        audioFiles.find((file) => file.url === currentUrl) ||
+        audioFiles[0];
+
+      selectAudio(nextAudio, false);
+    }
+
+    function setAudioErrorState() {
+      audioFiles = [];
+      selectedAudio = null;
+      audioSelect.disabled = true;
+      playAudioBtn.disabled = true;
+      audioStatus.textContent = "ERR";
+      playAudioBtn.textContent = "PLAY AUDIO";
+
+      audioSelect.innerHTML = "";
+      const option = document.createElement("option");
+      option.textContent = "AUDIO API ERROR";
+      audioSelect.appendChild(option);
+    }
+
+    function selectAudio(file, announce = true) {
+      if (!file) return;
+
+      selectedAudio = file;
+      audioSelect.value = file.url;
+
+      audioElement.pause();
+      audioElement.src = file.url;
+      audioElement.currentTime = 0;
+      audioElement.load();
+
+      playAudioBtn.textContent = "PLAY AUDIO";
+
+      if (announce) {
+        showStatus("AUDIO LOADED");
+      }
+    }
+
+    async function uploadImage(file) {
+      if (!file) return;
+
+      const isValid =
+        file.type === "image/png" ||
+        file.type === "image/jpeg";
+
+      if (!isValid) {
+        showStatus("PNG OR JPEG ONLY");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      showStatus("UPLOADING IMAGE");
+
+      const response = await fetch("/api/images", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showStatus(data.error || "UPLOAD FAILED");
+        return;
+      }
+
+      showStatus("IMAGE ADDED");
+      await loadImages();
+    }
+
+    async function uploadAudio(file) {
+      if (!file) return;
+
+      const validExt = /\.(mp3|wav|ogg|m4a|aac|flac|webm)$/i.test(file.name);
+
+      if (!validExt) {
+        showStatus("AUDIO TYPE NOT SUPPORTED");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      showStatus("UPLOADING AUDIO");
+
+      const response = await fetch("/api/audio", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showStatus(data.error || "UPLOAD FAILED");
+        return;
+      }
+
+      showStatus("AUDIO ADDED");
+      await loadAudioFiles(data.audio.url);
+    }
+
+    async function toggleAudioPlayback() {
+      if (!selectedAudio) {
+        showStatus("ADD AUDIO FIRST");
+        return;
+      }
+
+      try {
+        await setupAudioGraph();
+      } catch (error) {
+        console.error("Audio graph error:", error);
+        showStatus("AUDIO GRAPH ERROR");
+        return;
+      }
+
+      if (audioElement.paused) {
+        try {
+          await audioElement.play();
+          playAudioBtn.textContent = "PAUSE AUDIO";
+          showStatus("AUDIO PLAYING");
+        } catch (error) {
+          console.error("Audio play error:", error);
+          showStatus("PLAY FAILED");
+        }
+      } else {
+        audioElement.pause();
+        playAudioBtn.textContent = "PLAY AUDIO";
+        showStatus("AUDIO PAUSED");
+      }
+    }
+
+    function openCloseUp(image) {
+      lightboxImage.src = image.url;
+      lightboxImage.alt = image.name;
+      lightboxCaption.textContent = image.name;
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+    }
+
+    function closeCloseUp() {
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxImage.src = "";
+      lightboxCaption.textContent = "";
+    }
+
+    function resetGlobe() {
+      zoom = 1;
+      orientation = quatIdentity();
+
+      isHandsFree = false;
+      isPressed = false;
+      isDragging = false;
+
+      grabbedGlobePoint = null;
+      lastGlobePoint = null;
+      pressedImage = null;
+
+      inertiaSpeed = 0;
+
+      handsFreeBtn.classList.remove("active");
+
+      updateStageSize();
+      showStatus("RESET");
+    }
+
+    stage.addEventListener("pointerdown", startPointer);
+    stage.addEventListener("pointermove", movePointer);
+    stage.addEventListener("pointerup", endPointer);
+    stage.addEventListener("pointercancel", endPointer);
+    stage.addEventListener("pointerleave", endPointer);
+
+    stage.addEventListener("wheel", (event) => {
+      event.preventDefault();
+
+      const direction = event.deltaY > 0 ? -1 : 1;
+      setZoom(zoom + direction * 0.08);
+    }, { passive: false });
+
+    zoomInBtn.addEventListener("click", () => {
+      setZoom(zoom + 0.15);
+    });
+
+    zoomOutBtn.addEventListener("click", () => {
+      setZoom(zoom - 0.15);
+    });
+
+    resetBtn.addEventListener("click", resetGlobe);
+
+    handsFreeBtn.addEventListener("click", () => {
+      isHandsFree = !isHandsFree;
+      inertiaSpeed = 0;
+      handsFreeBtn.classList.toggle("active", isHandsFree);
+    });
+
+    refreshBtn.addEventListener("click", async () => {
+      showStatus("REFRESHING");
+
+      try {
+        await loadImages();
+      } catch (error) {
+        console.error("Refresh image error:", error);
+        showStatus("IMAGE API ERROR");
+      }
+
+      try {
+        await loadAudioFiles();
+      } catch (error) {
+        console.error("Refresh audio error:", error);
+        setAudioErrorState();
+        showStatus("AUDIO API ERROR");
+      }
+
+      showStatus("UPDATED");
+    });
+
+    sensitivitySlider.addEventListener("input", () => {
+      rotateSensitivity = Number(sensitivitySlider.value);
+      sensitivityValue.textContent = `${Math.round(rotateSensitivity * 100)}%`;
+    });
+
+    pulseSlider.addEventListener("input", () => {
+      pulseStrength = Number(pulseSlider.value);
+      pulseValue.textContent = `${Math.round(pulseStrength * 100)}%`;
+    });
+
+    audioSelect.addEventListener("change", () => {
+      const file = audioFiles.find((item) => item.url === audioSelect.value);
+      selectAudio(file);
+    });
+
+    playAudioBtn.addEventListener("click", toggleAudioPlayback);
+
+    audioElement.addEventListener("ended", () => {
+      playAudioBtn.textContent = "PLAY AUDIO";
+      showStatus("AUDIO ENDED");
+    });
+
+    audioElement.addEventListener("error", () => {
+      playAudioBtn.textContent = "PLAY AUDIO";
+      showStatus("AUDIO FILE ERROR");
+    });
+
+    uploadInput.addEventListener("change", async () => {
+      const file = uploadInput.files && uploadInput.files[0];
+
+      try {
+        await uploadImage(file);
+      } catch (error) {
+        console.error("Upload image error:", error);
+        showStatus("IMAGE UPLOAD ERROR");
+      }
+
+      uploadInput.value = "";
+    });
+
+    audioInput.addEventListener("change", async () => {
+      const file = audioInput.files && audioInput.files[0];
+
+      try {
+        await uploadAudio(file);
+      } catch (error) {
+        console.error("Upload audio error:", error);
+        showStatus("AUDIO UPLOAD ERROR");
+      }
+
+      audioInput.value = "";
+    });
+
+    window.addEventListener("resize", () => {
+      updateStageSize();
+    });
+
+    closeLightbox.addEventListener("click", closeCloseUp);
+
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeCloseUp();
+      }
+    });
+
+    lightboxFrame.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeCloseUp();
+      }
+
+      if (event.key === "+" || event.key === "=") {
+        setZoom(zoom + 0.15);
+      }
+
+      if (event.key === "-") {
+        setZoom(zoom - 0.15);
+      }
+
+      if (event.key.toLowerCase() === "r") {
+        resetGlobe();
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        toggleAudioPlayback();
+      }
+    });
+
+    async function boot() {
+      try {
+        await loadImages();
+      } catch (error) {
+        console.error("Failed to load images:", error);
+        emptyState.textContent = "IMAGE API ERROR";
+        emptyState.style.display = "grid";
+        showStatus("IMAGE API ERROR");
+      }
+
+      try {
+        await loadAudioFiles();
+      } catch (error) {
+        console.error("Failed to load audio:", error);
+        setAudioErrorState();
+        showStatus("AUDIO API ERROR");
+      }
+
+      if (rafId) cancelAnimationFrame(rafId);
+      renderSphere();
+    }
+
+    boot();
+  </script>
+</body>
+</html>

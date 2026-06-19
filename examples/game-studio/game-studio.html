@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slop Studio — Archived Game Document</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+
+    :root {
+      --ink: #1a1a1a;
+      --paper: #f0ede4;
+      --accent-yellow: #e8b04b;
+      --accent-blue: #a8c8e8;
+      --checker-grey: #d8d8d8;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--ink);
+      background:
+        linear-gradient(45deg, var(--checker-grey) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--checker-grey) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--checker-grey) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--checker-grey) 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+      padding: 18px;
+    }
+
+    .document {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      max-width: 1320px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      border-bottom: 2px solid var(--ink);
+      background: var(--accent-blue);
+      min-height: 44px;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    .topbar span:nth-child(2) {
+      text-align: center;
+    }
+
+    .topbar span:last-child {
+      text-align: right;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 2px solid var(--ink);
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--paper);
+    }
+
+    .nav a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--ink);
+      padding: 6px 8px;
+      background: var(--white);
+    }
+
+    .chrome {
+      min-height: 34px;
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      background: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+    }
+
+    .panel {
+      border-bottom: 2px solid var(--ink);
+      padding: 56px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 360ms ease-out, transform 360ms ease-out;
+    }
+
+    .panel.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pixel-cloud {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      gap: 0;
+      border: 2px solid var(--ink);
+      margin-bottom: 48px;
+      height: 38px;
+      background: var(--white);
+    }
+
+    .pixel-cloud span:nth-child(3n),
+    .pixel-cloud span:nth-child(5n) {
+      background: var(--accent-blue);
+      border-right: 1px solid var(--ink);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 2px solid var(--ink);
+      display: inline-block;
+      padding: 6px 8px;
+      background: var(--white);
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(42px, 8vw, 112px);
+      line-height: 0.9;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 5vw, 72px);
+      line-height: 0.92;
+      letter-spacing: -0.07em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    h3 {
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+      max-width: 760px;
+    }
+
+    .stamp {
+      display: inline;
+      background: var(--accent-yellow);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      padding: 0 6px;
+      font-weight: 700;
+    }
+
+    .lead {
+      margin-top: 28px;
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      color: var(--ink);
+      text-decoration: none;
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .btn.primary {
+      background: var(--accent-yellow);
+    }
+
+    .archive-card {
+      border: 2px solid var(--ink);
+      background: var(--white);
+    }
+
+    .archive-card .card-bar {
+      background: var(--accent-blue);
+      border-bottom: 2px solid var(--ink);
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .pixel-slime {
+      width: 100%;
+      aspect-ratio: 1 / 0.78;
+      border: 2px solid var(--ink);
+      background:
+        linear-gradient(var(--ink), var(--ink)) 42% 36% / 8% 8% no-repeat,
+        linear-gradient(var(--ink), var(--ink)) 62% 36% / 8% 8% no-repeat,
+        linear-gradient(var(--ink), var(--ink)) 50% 58% / 28% 6% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 58% / 70% 48% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 35% / 52% 30% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 14% 18% / 18% 16% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 86% 74% / 14% 22% no-repeat,
+        var(--paper);
+      image-rendering: pixelated;
+    }
+
+    .caption {
+      font-size: 11px;
+      line-height: 1.55;
+      text-transform: uppercase;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .fact {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      padding: 12px;
+      min-height: 88px;
+    }
+
+    .fact strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .fact span {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .featured {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+      gap: 36px;
+      align-items: stretch;
+    }
+
+    .cover {
+      border: 2px solid var(--ink);
+      min-height: 520px;
+      background:
+        linear-gradient(var(--ink), var(--ink)) 20% 18% / 18% 8% no-repeat,
+        linear-gradient(var(--ink), var(--ink)) 82% 24% / 10% 10% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 58% / 78% 58% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 50% 18% / 92% 20% no-repeat,
+        var(--white);
+      position: relative;
+    }
+
+    .cover::after {
+      content: "SLIME CITY PANIC";
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      right: 20px;
+      font-size: clamp(32px, 5vw, 72px);
+      line-height: 0.88;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .spec-table {
+      border: 2px solid var(--ink);
+      margin-top: 24px;
+      background: var(--white);
+    }
+
+    .spec-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .spec-row:last-child {
+      border-bottom: 0;
+    }
+
+    .spec-row div {
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .spec-row div:first-child {
+      font-weight: 700;
+      text-transform: uppercase;
+      border-right: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .game-card {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .thumb {
+      height: 150px;
+      border-bottom: 2px solid var(--ink);
+      background: var(--paper);
+      position: relative;
+    }
+
+    .thumb.slime {
+      background:
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 62% / 70% 44% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 20% 20% / 20% 18% no-repeat,
+        var(--paper);
+    }
+
+    .thumb.trash {
+      background:
+        linear-gradient(var(--ink), var(--ink)) 50% 40% / 30% 34% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 72% / 70% 16% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 72% 28% / 16% 22% no-repeat,
+        var(--paper);
+    }
+
+    .thumb.frog {
+      background:
+        linear-gradient(var(--ink), var(--ink)) 40% 42% / 8% 8% no-repeat,
+        linear-gradient(var(--ink), var(--ink)) 60% 42% / 8% 8% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 50% 56% / 68% 34% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 20% / 36% 22% no-repeat,
+        var(--paper);
+    }
+
+    .thumb.sandwich {
+      background:
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 32% / 76% 18% no-repeat,
+        linear-gradient(var(--ink), var(--ink)) 50% 50% / 62% 10% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50% 66% / 76% 18% no-repeat,
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 20% 18% / 14% 14% no-repeat,
+        var(--paper);
+    }
+
+    .game-card .content {
+      padding: 16px;
+      flex: 1;
+    }
+
+    .tagline {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+      border: 1px solid var(--ink);
+      padding: 4px 6px;
+      margin: 10px 0 14px;
+      background: var(--accent-yellow);
+    }
+
+    .game-card p {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .process-list {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border: 2px solid var(--ink);
+      background: var(--white);
+    }
+
+    .process-step {
+      min-height: 220px;
+      border-right: 2px solid var(--ink);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .process-step:last-child {
+      border-right: 0;
+    }
+
+    .process-step .num {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.08em;
+    }
+
+    .process-step p {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .value {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      padding: 18px;
+      min-height: 240px;
+    }
+
+    .value h3 {
+      background: var(--accent-yellow);
+      display: inline;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      padding: 0 4px;
+    }
+
+    .value p {
+      font-size: 13px;
+      margin-top: 18px;
+    }
+
+    .devlog-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .devlog-card {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      padding: 18px;
+      min-height: 170px;
+    }
+
+    .devlog-card.large {
+      min-height: 356px;
+      background:
+        linear-gradient(var(--accent-blue), var(--accent-blue)) 100% 0 / 32% 28% no-repeat,
+        linear-gradient(var(--accent-yellow), var(--accent-yellow)) 82% 82% / 26% 18% no-repeat,
+        var(--white);
+    }
+
+    .devlog-card p {
+      font-size: 13px;
+    }
+
+    .community-box {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      display: grid;
+      grid-template-columns: 1fr 0.7fr;
+      gap: 0;
+    }
+
+    .community-copy {
+      padding: 28px;
+      border-right: 2px solid var(--ink);
+    }
+
+    .terminal-note {
+      padding: 28px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .contact-card {
+      border: 2px solid var(--ink);
+      background: var(--white);
+      padding: 20px;
+    }
+
+    .contact-card p {
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 18px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: var(--accent-blue);
+      border-top: 2px solid var(--ink);
+    }
+
+    @media (max-width: 980px) {
+      .panel {
+        padding: 40px 28px;
+      }
+
+      .hero-grid,
+      .two-col,
+      .featured,
+      .community-box,
+      .contact-grid,
+      .devlog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .community-copy {
+        border-right: 0;
+        border-bottom: 2px solid var(--ink);
+      }
+
+      .game-grid,
+      .values-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .process-list {
+        grid-template-columns: 1fr;
+      }
+
+      .process-step {
+        min-height: 160px;
+        border-right: 0;
+        border-bottom: 2px solid var(--ink);
+      }
+
+      .process-step:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+        background-size: 18px 18px;
+        background-position: 0 0, 0 9px, 9px -9px, -9px 0px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        text-align: left;
+        padding: 10px;
+      }
+
+      .topbar span:nth-child(2),
+      .topbar span:last-child {
+        text-align: left;
+      }
+
+      .panel {
+        padding: 28px 16px;
+      }
+
+      .pixel-cloud {
+        margin-bottom: 28px;
+      }
+
+      h1 {
+        font-size: 48px;
+      }
+
+      h2 {
+        font-size: 34px;
+      }
+
+      .game-grid,
+      .values-grid,
+      .fact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .spec-row {
+        grid-template-columns: 1fr;
+      }
+
+      .spec-row div:first-child {
+        border-right: 0;
+        border-bottom: 2px solid var(--ink);
+      }
+
+      .cover {
+        min-height: 420px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="document">
+    <header class="topbar">
+      <span>ARCHIVE FILE: SLOP-STUDIO</span>
+      <span>INDEPENDENT GAME DOCUMENT</span>
+      <span>REV. 2026</span>
+    </header>
+
+    <nav class="nav">
+      <a href="#about">About</a>
+      <a href="#featured">Featured Game</a>
+      <a href="#library">Library</a>
+      <a href="#process">Process</a>
+      <a href="#community">Community</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <section class="panel hero is-visible" id="home">
+      <div class="pixel-cloud">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Slop Studio / Game Studio / Strange Worlds</div>
+          <h1>We make games that should not work, but somehow do.</h1>
+
+          <p class="lead">
+            <span class="stamp">Slop Studio</span> is an indie game studio building strange,
+            expressive, and unforgettable games with bold art direction,
+            chaotic mechanics, and playful systems.
+          </p>
+
+          <div class="actions">
+            <a class="btn primary" href="#featured">View Our Games</a>
+            <a class="btn" href="#featured">Watch Trailer</a>
+            <a class="btn" href="#community">Play Demo</a>
+          </div>
+        </div>
+
+        <aside class="archive-card">
+          <div class="card-bar">VISUAL SPECIMEN: SLOP-001</div>
+          <div class="card-body">
+            <div class="pixel-slime"></div>
+            <p class="caption">
+              Tiny slime character recovered from early prototype folder.
+              Status: currently cooking. Bug? Feature? Yes.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / ABOUT_STUDIO.TXT</div>
+
+    <section class="panel" id="about">
+      <div class="two-col">
+        <div>
+          <h2>Small team. Big questionable ideas.</h2>
+          <p>
+            Founded in 2026, Slop Studio is a small independent game studio
+            focused on making playful, strange, and visually expressive games.
+          </p>
+        </div>
+
+        <div>
+          <p>
+            We believe games do not always need to be polished in the traditional
+            way. Sometimes, the best moments come from systems that feel alive,
+            messy, surprising, and slightly broken in the right direction.
+          </p>
+
+          <div class="fact-grid">
+            <div class="fact">
+              <strong>Focus</strong>
+              <span>Experimental gameplay and weird little systems.</span>
+            </div>
+            <div class="fact">
+              <strong>Visual</strong>
+              <span>Strong identity, crude charm, memorable worlds.</span>
+            </div>
+            <div class="fact">
+              <strong>Worlds</strong>
+              <span>Character-driven places with loud personalities.</span>
+            </div>
+            <div class="fact">
+              <strong>Studio Type</strong>
+              <span>Small independent team with bold ideas.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / FEATURED_GAME.SCREEN</div>
+
+    <section class="panel" id="featured">
+      <div class="featured">
+        <div class="cover"></div>
+
+        <div>
+          <div class="eyebrow">Featured Game / In Development</div>
+          <h2>Slime City Panic</h2>
+          <p>
+            A chaotic action-adventure game where you play as a tiny slime
+            trying to survive in a city that hates being sticky.
+          </p>
+
+          <div class="spec-table">
+            <div class="spec-row">
+              <div>Title</div>
+              <div>Slime City Panic</div>
+            </div>
+            <div class="spec-row">
+              <div>Genre</div>
+              <div>Action Adventure / Comedy</div>
+            </div>
+            <div class="spec-row">
+              <div>Platform</div>
+              <div>PC, Nintendo Switch</div>
+            </div>
+            <div class="spec-row">
+              <div>Status</div>
+              <div>In Development</div>
+            </div>
+            <div class="spec-row">
+              <div>Release</div>
+              <div>2027</div>
+            </div>
+            <div class="spec-row">
+              <div>Mode</div>
+              <div>Single Player</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a class="btn primary" href="#community">Wishlist This Chaos</a>
+            <a class="btn" href="#community">Play Demo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / GAME_LIBRARY.INDEX</div>
+
+    <section class="panel" id="library">
+      <h2>Game Library</h2>
+
+      <div class="game-grid">
+        <article class="game-card">
+          <div class="thumb slime"></div>
+          <div class="content">
+            <h3>Slime City Panic</h3>
+            <div class="tagline">Action Adventure</div>
+            <p>Game action-adventure kacau tentang slime kecil di kota besar.</p>
+          </div>
+        </article>
+
+        <article class="game-card">
+          <div class="thumb trash"></div>
+          <div class="content">
+            <h3>Trash Knight</h3>
+            <div class="tagline">Roguelike</div>
+            <p>Ksatria memakai armor dari barang bekas dan tetap merasa keren.</p>
+          </div>
+        </article>
+
+        <article class="game-card">
+          <div class="thumb frog"></div>
+          <div class="content">
+            <h3>Frog.exe</h3>
+            <div class="tagline">Puzzle Horror</div>
+            <p>Katak digital mulai sadar diri dan mengubah aturan layar.</p>
+          </div>
+        </article>
+
+        <article class="game-card">
+          <div class="thumb sandwich"></div>
+          <div class="content">
+            <h3>Sandwich Planet</h3>
+            <div class="tagline">Simulation</div>
+            <p>Membangun peradaban dari roti lapis luar angkasa.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / CREATIVE_PROCESS.LOG</div>
+
+    <section class="panel" id="process">
+      <h2>Creative Process</h2>
+      <p>
+        We start with strange ideas, test them quickly, and keep the parts that
+        feel surprising. Our process is messy, playful, and focused on
+        discovering moments that players will remember.
+      </p>
+
+      <div style="height: 28px"></div>
+
+      <div class="process-list">
+        <div class="process-step">
+          <div class="num">01</div>
+          <h3>Prototype the weird idea</h3>
+          <p>Start from the mechanic that sounds too strange to pitch normally.</p>
+        </div>
+
+        <div class="process-step">
+          <div class="num">02</div>
+          <h3>Break the system</h3>
+          <p>Push the prototype until the funny accident appears.</p>
+        </div>
+
+        <div class="process-step">
+          <div class="num">03</div>
+          <h3>Find the fun</h3>
+          <p>Keep the strange part only when it becomes satisfying to play.</p>
+        </div>
+
+        <div class="process-step">
+          <div class="num">04</div>
+          <h3>Build the world</h3>
+          <p>Turn the mechanic into characters, places, rules, and jokes.</p>
+        </div>
+
+        <div class="process-step">
+          <div class="num">05</div>
+          <h3>Polish what matters</h3>
+          <p>Make the experience readable without sanding away the personality.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / STUDIO_VALUES.MANIFESTO</div>
+
+    <section class="panel">
+      <h2>Studio Values</h2>
+
+      <div class="values-grid">
+        <div class="value">
+          <h3>Weird is good</h3>
+          <p>Kami percaya ide aneh bisa menjadi pengalaman bermain yang kuat.</p>
+        </div>
+
+        <div class="value">
+          <h3>Gameplay first</h3>
+          <p>Visual boleh gila, tapi gameplay harus tetap menyenangkan.</p>
+        </div>
+
+        <div class="value">
+          <h3>Small worlds, big personality</h3>
+          <p>Kami suka membuat dunia kecil dengan karakter yang kuat.</p>
+        </div>
+
+        <div class="value">
+          <h3>Make it memorable</h3>
+          <p>Game yang bagus bukan hanya dimainkan, tapi diingat.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / BEHIND_THE_SCENES.DIR</div>
+
+    <section class="panel">
+      <h2>Behind the Scenes</h2>
+
+      <div class="devlog-grid">
+        <article class="devlog-card large">
+          <div class="eyebrow">Devlog 04</div>
+          <h3>We accidentally made the slime too powerful.</h3>
+          <p>
+            The prototype started as a small movement test. Then the slime
+            learned to launch itself across traffic, climb buildings, and
+            emotionally damage street lamps.
+          </p>
+        </article>
+
+        <div>
+          <article class="devlog-card">
+            <div class="eyebrow">Concept Note</div>
+            <h3>The city should feel annoyed, not evil.</h3>
+            <p>The world reacts like a tired office worker, not a villain.</p>
+          </article>
+
+          <div style="height: 16px"></div>
+
+          <article class="devlog-card">
+            <div class="eyebrow">Prototype Test</div>
+            <h3>Players kept throwing trash at the moon.</h3>
+            <p>So we made it a feature. The moon now has opinions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / COMMUNITY_CHANNEL.SYS</div>
+
+    <section class="panel" id="community">
+      <div class="community-box">
+        <div class="community-copy">
+          <div class="eyebrow">Community / Newsletter / Wishlist</div>
+          <h2>Join the mess before it becomes a game.</h2>
+          <p>
+            Get devlogs, demo announcements, behind-the-scenes chaos, and early
+            access news from Slop Studio.
+          </p>
+
+          <div class="actions">
+            <a class="btn primary" href="#">Join Discord</a>
+            <a class="btn" href="#">Subscribe</a>
+            <a class="btn" href="#">Wishlist on Steam</a>
+          </div>
+        </div>
+
+        <pre class="terminal-note">SLOP_MAILER_STATUS:
+> demo_available: false
+> slime_power_level: unsafe
+> devlog_queue: 04 files
+> community_note:
+  "built with questionable
+   decisions, documented
+   for your safety."</pre>
+      </div>
+    </section>
+
+    <div class="chrome">WINDOW / CONTACT_AND_PRESS_KIT.FORM</div>
+
+    <section class="panel" id="contact">
+      <h2>Contact / Collaboration</h2>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>Publisher / Press / Business</h3>
+          <p>
+            Want to publish, cover, or collaborate with us? Send us a message.
+            We probably read emails between fixing bugs and naming frogs.
+          </p>
+
+          <div class="actions">
+            <a class="btn primary" href="mailto:hello@slopstudio.games">Contact Us</a>
+            <a class="btn" href="#">Download Press Kit</a>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <h3>Studio Channels</h3>
+          <p>
+            Email: hello@slopstudio.games<br />
+            Press: press@slopstudio.games<br />
+            Discord: /slopstudio<br />
+            Social: @slopstudio<br />
+            Location: Somewhere between a bug report and a sandwich planet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Slop Studio</span>
+      <span>Weird games. Loud worlds. Beautiful chaos.</span>
+    </footer>
+  </main>
+
+  <script>
+    const sections = document.querySelectorAll(".panel");
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Slop Studio — Interactive Archived Game Document</title>
+      <style>
+         :root {
+            --ink: #1a1a1a;
+            --paper: #f0ede4;
+            --paper-soft: #fbf7ed;
+            --accent-yellow: #e8b04b;
+            --accent-blue: #a8c8e8;
+            --checker-grey: #d8d8d8;
+            --white: #ffffff;
+            --hot: #ec5a7a;
+         }
+         * {
+            box-sizing: border-box;
+         }
+         html {
+            scroll-behavior: smooth;
+         }
+         body {
+            margin: 0;
+            font-family: "IBM Plex Mono", "Courier New", monospace;
+            color: var(--ink);
+            background: linear-gradient(
+                  45deg,
+                  var(--checker-grey) 25%,
+                  transparent 25%
+               ),
+               linear-gradient(-45deg, var(--checker-grey) 25%, transparent 25%),
+               linear-gradient(45deg, transparent 75%, var(--checker-grey) 75%),
+               linear-gradient(-45deg, transparent 75%, var(--checker-grey) 75%);
+            background-color: var(--white);
+            background-size: 24px 24px;
+            background-position:
+               0 0,
+               0 12px,
+               12px -12px,
+               -12px 0px;
+            padding: 18px;
+            overflow-x: hidden;
+         }
+         canvas#ambient {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.42;
+         }
+         .cursor-probe {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 34px;
+            height: 34px;
+            z-index: 99;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            opacity: 0;
+         }
+         .cursor-probe::before,
+         .cursor-probe::after {
+            content: "";
+            position: absolute;
+            background: var(--ink);
+         }
+         .cursor-probe::before {
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            transform: translateX(-50%);
+         }
+         .cursor-probe::after {
+            top: 50%;
+            left: 0;
+            height: 2px;
+            width: 100%;
+            transform: translateY(-50%);
+         }
+         .document {
+            position: relative;
+            z-index: 1;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            max-width: 1320px;
+            margin: 0 auto;
+            min-height: 100vh;
+            overflow: hidden;
+         }
+         .topbar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            border-bottom: 2px solid var(--ink);
+            background: var(--accent-blue);
+            min-height: 44px;
+            padding: 0 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            transform-origin: 50% 50%;
+         }
+         .topbar span:nth-child(2) {
+            text-align: center;
+         }
+         .topbar span:last-child {
+            text-align: right;
+         }
+         .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 2px solid var(--ink);
+            padding: 10px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: var(--paper);
+         }
+         .nav a {
+            color: var(--ink);
+            text-decoration: none;
+            border: 1px solid var(--ink);
+            padding: 6px 8px;
+            background: var(--white);
+            display: inline-block;
+            will-change: transform, opacity;
+         }
+         .chrome {
+            min-height: 34px;
+            border-top: 2px solid var(--ink);
+            border-bottom: 2px solid var(--ink);
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            overflow: hidden;
+            position: relative;
+            will-change: transform;
+         }
+         .chrome::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+               90deg,
+               transparent,
+               rgba(255, 255, 255, 0.9),
+               transparent
+            );
+            transform: translateX(-120%);
+            opacity: 0.48;
+            pointer-events: none;
+         }
+         .panel {
+            border-bottom: 2px solid var(--ink);
+            padding: 56px;
+            opacity: 0;
+            transform: translate3d(0, 18px, 0);
+            will-change: transform, opacity;
+            position: relative;
+            background: linear-gradient(
+                  90deg,
+                  rgba(26, 26, 26, 0.025) 1px,
+                  transparent 1px
+               ),
+               linear-gradient(
+                  0deg,
+                  rgba(26, 26, 26, 0.018) 1px,
+                  transparent 1px
+               ),
+               var(--paper);
+            background-size: 32px 32px;
+         }
+         .hero {
+            position: relative;
+            overflow: hidden;
+         }
+         .pixel-cloud {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 0;
+            border: 2px solid var(--ink);
+            margin-bottom: 48px;
+            height: 38px;
+            background: var(--white);
+            overflow: hidden;
+         }
+         .pixel-cloud span:nth-child(3n),
+         .pixel-cloud span:nth-child(5n) {
+            background: var(--accent-blue);
+            border-right: 1px solid var(--ink);
+         }
+         .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+            gap: 48px;
+            align-items: start;
+         }
+         .eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 2px solid var(--ink);
+            display: inline-block;
+            padding: 6px 8px;
+            background: var(--white);
+            margin-bottom: 20px;
+            will-change: transform;
+         }
+         h1,
+         h2,
+         h3,
+         p {
+            margin: 0;
+         }
+         h1 {
+            font-size: clamp(42px, 8vw, 112px);
+            line-height: 0.9;
+            letter-spacing: -0.08em;
+            text-transform: uppercase;
+            max-width: 980px;
+         }
+         h2 {
+            font-size: clamp(30px, 5vw, 72px);
+            line-height: 0.92;
+            letter-spacing: -0.07em;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+         }
+         h3 {
+            font-size: 20px;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+         }
+         p {
+            font-size: 15px;
+            line-height: 1.65;
+            letter-spacing: -0.02em;
+            max-width: 760px;
+         }
+         .stamp {
+            display: inline;
+            background: var(--accent-yellow);
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            padding: 0 6px;
+            font-weight: 700;
+         }
+         .lead {
+            margin-top: 28px;
+            max-width: 760px;
+            font-size: 17px;
+            line-height: 1.6;
+         }
+         .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 32px;
+         }
+         .btn {
+            appearance: none;
+            border: 2px solid var(--ink);
+            background: var(--white);
+            color: var(--ink);
+            text-decoration: none;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            position: relative;
+            isolation: isolate;
+            will-change: transform, opacity;
+            overflow: hidden;
+         }
+         .btn::before {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 100%;
+            background: var(--accent-yellow);
+            transform: translateY(100%);
+            z-index: -1;
+         }
+         .btn.primary {
+            background: var(--accent-yellow);
+         }
+         .btn.primary::before {
+            background: var(--hot);
+         }
+         .archive-card,
+         .game-card,
+         .value,
+         .devlog-card,
+         .contact-card,
+         .community-box,
+         .fact,
+         .spec-table,
+         .cover {
+            will-change: transform, opacity;
+         }
+         .archive-card {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            transform-style: preserve-3d;
+         }
+         .archive-card .card-bar {
+            background: var(--accent-blue);
+            border-bottom: 2px solid var(--ink);
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+         }
+         .card-body {
+            padding: 18px;
+         }
+         .pixel-slime {
+            width: 100%;
+            aspect-ratio: 1 / 0.78;
+            border: 2px solid var(--ink);
+            background:
+               linear-gradient(var(--ink), var(--ink)) 42% 36% / 8% 8% no-repeat,
+               linear-gradient(var(--ink), var(--ink)) 62% 36% / 8% 8% no-repeat,
+               linear-gradient(var(--ink), var(--ink)) 50% 58% / 28% 6%
+                  no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  58% / 70% 48% no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  35% / 52% 30% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 14% 18% /
+                  18% 16% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 86% 74% /
+                  14% 22% no-repeat,
+               var(--paper);
+            image-rendering: pixelated;
+            will-change: transform;
+         }
+         .caption {
+            font-size: 11px;
+            line-height: 1.55;
+            text-transform: uppercase;
+            margin-top: 12px;
+            font-weight: 700;
+         }
+         .two-col {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 48px;
+            align-items: start;
+         }
+         .fact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 28px;
+         }
+         .fact {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            padding: 12px;
+            min-height: 88px;
+         }
+         .fact strong {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+         }
+         .fact span {
+            font-size: 14px;
+            line-height: 1.45;
+         }
+         .featured {
+            display: grid;
+            grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+            gap: 36px;
+            align-items: stretch;
+         }
+         .cover {
+            border: 2px solid var(--ink);
+            min-height: 520px;
+            background:
+               linear-gradient(var(--ink), var(--ink)) 20% 18% / 18% 8%
+                  no-repeat,
+               linear-gradient(var(--ink), var(--ink)) 82% 24% / 10% 10%
+                  no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  58% / 78% 58% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 50% 18% /
+                  92% 20% no-repeat,
+               var(--white);
+            position: relative;
+            overflow: hidden;
+         }
+         .cover::after {
+            content: "SLIME CITY PANIC";
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            right: 20px;
+            font-size: clamp(32px, 5vw, 72px);
+            line-height: 0.88;
+            letter-spacing: -0.08em;
+            font-weight: 700;
+            text-transform: uppercase;
+         }
+         .spec-table {
+            border: 2px solid var(--ink);
+            margin-top: 24px;
+            background: var(--white);
+         }
+         .spec-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            border-bottom: 2px solid var(--ink);
+         }
+         .spec-row:last-child {
+            border-bottom: 0;
+         }
+         .spec-row div {
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+         }
+         .spec-row div:first-child {
+            font-weight: 700;
+            text-transform: uppercase;
+            border-right: 2px solid var(--ink);
+            background: var(--paper);
+         }
+         .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+         }
+         .game-card {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+         }
+         .thumb {
+            height: 150px;
+            border-bottom: 2px solid var(--ink);
+            background: var(--paper);
+            position: relative;
+            overflow: hidden;
+         }
+         .thumb::after {
+            content: "";
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            border: 2px solid var(--ink);
+            right: 16px;
+            bottom: 16px;
+            background: var(--white);
+            transform: rotate(0deg);
+         }
+         .thumb.slime {
+            background:
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  62% / 70% 44% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 20% 20% /
+                  20% 18% no-repeat,
+               var(--paper);
+         }
+         .thumb.trash {
+            background:
+               linear-gradient(var(--ink), var(--ink)) 50% 40% / 30% 34%
+                  no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  72% / 70% 16% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 72% 28% /
+                  16% 22% no-repeat,
+               var(--paper);
+         }
+         .thumb.frog {
+            background:
+               linear-gradient(var(--ink), var(--ink)) 40% 42% / 8% 8% no-repeat,
+               linear-gradient(var(--ink), var(--ink)) 60% 42% / 8% 8% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 50% 56% /
+                  68% 34% no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  20% / 36% 22% no-repeat,
+               var(--paper);
+         }
+         .thumb.sandwich {
+            background:
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  32% / 76% 18% no-repeat,
+               linear-gradient(var(--ink), var(--ink)) 50% 50% / 62% 10%
+                  no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 50%
+                  66% / 76% 18% no-repeat,
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 20% 18% /
+                  14% 14% no-repeat,
+               var(--paper);
+         }
+         .game-card .content {
+            padding: 16px;
+            flex: 1;
+         }
+         .tagline {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            border: 1px solid var(--ink);
+            padding: 4px 6px;
+            margin: 10px 0 14px;
+            background: var(--accent-yellow);
+            will-change: transform;
+         }
+         .game-card p {
+            font-size: 13px;
+            line-height: 1.55;
+         }
+         .process-list {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            border: 2px solid var(--ink);
+            background: var(--white);
+         }
+         .process-step {
+            min-height: 220px;
+            border-right: 2px solid var(--ink);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            will-change: transform, opacity;
+         }
+         .process-step:last-child {
+            border-right: 0;
+         }
+         .process-step .num {
+            font-size: 44px;
+            font-weight: 700;
+            letter-spacing: -0.08em;
+         }
+         .process-step p {
+            font-size: 13px;
+            line-height: 1.45;
+         }
+         .values-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+         }
+         .value {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            padding: 18px;
+            min-height: 240px;
+         }
+         .value h3 {
+            background: var(--accent-yellow);
+            display: inline;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            padding: 0 4px;
+         }
+         .value p {
+            font-size: 13px;
+            margin-top: 18px;
+         }
+         .devlog-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 16px;
+         }
+         .devlog-card {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            padding: 18px;
+            min-height: 170px;
+         }
+         .devlog-card.large {
+            min-height: 356px;
+            background:
+               linear-gradient(var(--accent-blue), var(--accent-blue)) 100% 0 /
+                  32% 28% no-repeat,
+               linear-gradient(var(--accent-yellow), var(--accent-yellow)) 82%
+                  82% / 26% 18% no-repeat,
+               var(--white);
+         }
+         .devlog-card p {
+            font-size: 13px;
+         }
+         .community-box {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            display: grid;
+            grid-template-columns: 1fr 0.7fr;
+            gap: 0;
+         }
+         .community-copy {
+            padding: 28px;
+            border-right: 2px solid var(--ink);
+         }
+         .terminal-note {
+            padding: 28px;
+            background: var(--ink);
+            color: var(--paper);
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin: 0;
+            overflow: hidden;
+         }
+         .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+         }
+         .contact-card {
+            border: 2px solid var(--ink);
+            background: var(--white);
+            padding: 20px;
+         }
+         .contact-card p {
+            font-size: 13px;
+         }
+         footer {
+            padding: 18px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: var(--accent-blue);
+            border-top: 2px solid var(--ink);
+         }
+         @media (max-width: 980px) {
+            .panel {
+               padding: 40px 28px;
+            }
+            .hero-grid,
+            .two-col,
+            .featured,
+            .community-box,
+            .contact-grid,
+            .devlog-grid {
+               grid-template-columns: 1fr;
+            }
+            .community-copy {
+               border-right: 0;
+               border-bottom: 2px solid var(--ink);
+            }
+            .game-grid,
+            .values-grid {
+               grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .process-list {
+               grid-template-columns: 1fr;
+            }
+            .process-step {
+               min-height: 160px;
+               border-right: 0;
+               border-bottom: 2px solid var(--ink);
+            }
+            .process-step:last-child {
+               border-bottom: 0;
+            }
+         }
+         @media (max-width: 640px) {
+            body {
+               padding: 14px;
+               background-size: 18px 18px;
+               background-position:
+                  0 0,
+                  0 9px,
+                  9px -9px,
+                  -9px 0px;
+            }
+            .cursor-probe {
+               display: none;
+            }
+            .topbar {
+               grid-template-columns: 1fr;
+               gap: 4px;
+               text-align: left;
+               padding: 10px;
+            }
+            .topbar span:nth-child(2),
+            .topbar span:last-child {
+               text-align: left;
+            }
+            .panel {
+               padding: 28px 16px;
+            }
+            .pixel-cloud {
+               margin-bottom: 28px;
+            }
+            h1 {
+               font-size: 48px;
+            }
+            h2 {
+               font-size: 34px;
+            }
+            .game-grid,
+            .values-grid,
+            .fact-grid {
+               grid-template-columns: 1fr;
+            }
+            .spec-row {
+               grid-template-columns: 1fr;
+            }
+            .spec-row div:first-child {
+               border-right: 0;
+               border-bottom: 2px solid var(--ink);
+            }
+            .cover {
+               min-height: 420px;
+            }
+         }
+      </style>
+   </head>
+   <body>
+      <canvas id="ambient"></canvas>
+      <div class="cursor-probe" id="cursorProbe"></div>
+      <main class="document">
+         <header class="topbar" data-wobble>
+            <span>ARCHIVE FILE: SLOP-STUDIO</span>
+            <span>INDEPENDENT GAME DOCUMENT</span> <span>REV. 2026</span>
+         </header>
+         <nav class="nav">
+            <a data-button href="#about">About</a>
+            <a data-button href="#featured">Featured Game</a>
+            <a data-button href="#library">Library</a>
+            <a data-button href="#process">Process</a>
+            <a data-button href="#community">Community</a>
+            <a data-button href="#contact">Contact</a>
+         </nav>
+         <section class="panel hero" id="home" data-panel>
+            <div class="pixel-cloud" data-pixel-strip>
+               <span></span><span></span><span></span><span></span
+               ><span></span> <span></span><span></span><span></span
+               ><span></span><span></span> <span></span><span></span
+               ><span></span><span></span><span></span> <span></span
+               ><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="hero-grid">
+               <div>
+                  <div class="eyebrow" data-float>
+                     Slop Studio / Game Studio / Strange Worlds
+                  </div>
+                  <h1>We make games that should not work, but somehow do.</h1>
+                  <p class="lead">
+                     <span class="stamp">Slop Studio</span> is an indie game
+                     studio building strange, expressive, and unforgettable
+                     games with bold art direction, chaotic mechanics, and
+                     playful systems.
+                  </p>
+                  <div class="actions">
+                     <a class="btn primary" data-button href="#featured"
+                        >View Our Games</a
+                     >
+                     <a class="btn" data-button href="#featured"
+                        >Watch Trailer</a
+                     >
+                     <a class="btn" data-button href="#community">Play Demo</a>
+                  </div>
+               </div>
+               <aside class="archive-card" data-tilt>
+                  <div class="card-bar">VISUAL SPECIMEN: SLOP-001</div>
+                  <div class="card-body">
+                     <div class="pixel-slime" data-slime></div>
+                     <p class="caption">
+                        Tiny slime character recovered from early prototype
+                        folder. Status: currently cooking. Bug? Feature? Yes.
+                     </p>
+                  </div>
+               </aside>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / ABOUT_STUDIO.TXT</div>
+         <section class="panel" id="about" data-panel>
+            <div class="two-col">
+               <div>
+                  <h2>Small team. Big questionable ideas.</h2>
+                  <p>
+                     Founded in 2026, Slop Studio is a small independent game
+                     studio focused on making playful, strange, and visually
+                     expressive games.
+                  </p>
+               </div>
+               <div>
+                  <p>
+                     We believe games do not always need to be polished in the
+                     traditional way. Sometimes, the best moments come from
+                     systems that feel alive, messy, surprising, and slightly
+                     broken in the right direction.
+                  </p>
+                  <div class="fact-grid">
+                     <div class="fact" data-tilt>
+                        <strong>Focus</strong>
+                        <span
+                           >Experimental gameplay and weird little
+                           systems.</span
+                        >
+                     </div>
+                     <div class="fact" data-tilt>
+                        <strong>Visual</strong>
+                        <span
+                           >Strong identity, crude charm, memorable
+                           worlds.</span
+                        >
+                     </div>
+                     <div class="fact" data-tilt>
+                        <strong>Worlds</strong>
+                        <span
+                           >Character-driven places with loud
+                           personalities.</span
+                        >
+                     </div>
+                     <div class="fact" data-tilt>
+                        <strong>Studio Type</strong>
+                        <span>Small independent team with bold ideas.</span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / FEATURED_GAME.SCREEN</div>
+         <section class="panel" id="featured" data-panel>
+            <div class="featured">
+               <div class="cover" data-tilt></div>
+               <div>
+                  <div class="eyebrow" data-float>
+                     Featured Game / In Development
+                  </div>
+                  <h2>Slime City Panic</h2>
+                  <p>
+                     A chaotic action-adventure game where you play as a tiny
+                     slime trying to survive in a city that hates being sticky.
+                  </p>
+                  <div class="spec-table" data-tilt>
+                     <div class="spec-row">
+                        <div>Title</div>
+                        <div>Slime City Panic</div>
+                     </div>
+                     <div class="spec-row">
+                        <div>Genre</div>
+                        <div>Action Adventure / Comedy</div>
+                     </div>
+                     <div class="spec-row">
+                        <div>Platform</div>
+                        <div>PC, Nintendo Switch</div>
+                     </div>
+                     <div class="spec-row">
+                        <div>Status</div>
+                        <div>In Development</div>
+                     </div>
+                     <div class="spec-row">
+                        <div>Release</div>
+                        <div>2027</div>
+                     </div>
+                     <div class="spec-row">
+                        <div>Mode</div>
+                        <div>Single Player</div>
+                     </div>
+                  </div>
+                  <div class="actions">
+                     <a class="btn primary" data-button href="#community"
+                        >Wishlist This Chaos</a
+                     >
+                     <a class="btn" data-button href="#community">Play Demo</a>
+                  </div>
+               </div>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / GAME_LIBRARY.INDEX</div>
+         <section class="panel" id="library" data-panel>
+            <h2>Game Library</h2>
+            <div class="game-grid">
+               <article class="game-card" data-tilt>
+                  <div class="thumb slime"></div>
+                  <div class="content">
+                     <h3>Slime City Panic</h3>
+                     <div class="tagline">Action Adventure</div>
+                     <p>
+                        Game action-adventure kacau tentang slime kecil di kota
+                        besar.
+                     </p>
+                  </div>
+               </article>
+               <article class="game-card" data-tilt>
+                  <div class="thumb trash"></div>
+                  <div class="content">
+                     <h3>Trash Knight</h3>
+                     <div class="tagline">Roguelike</div>
+                     <p>
+                        Ksatria memakai armor dari barang bekas dan tetap merasa
+                        keren.
+                     </p>
+                  </div>
+               </article>
+               <article class="game-card" data-tilt>
+                  <div class="thumb frog"></div>
+                  <div class="content">
+                     <h3>Frog.exe</h3>
+                     <div class="tagline">Puzzle Horror</div>
+                     <p>
+                        Katak digital mulai sadar diri dan mengubah aturan
+                        layar.
+                     </p>
+                  </div>
+               </article>
+               <article class="game-card" data-tilt>
+                  <div class="thumb sandwich"></div>
+                  <div class="content">
+                     <h3>Sandwich Planet</h3>
+                     <div class="tagline">Simulation</div>
+                     <p>Membangun peradaban dari roti lapis luar angkasa.</p>
+                  </div>
+               </article>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / CREATIVE_PROCESS.LOG</div>
+         <section class="panel" id="process" data-panel>
+            <h2>Creative Process</h2>
+            <p>
+               We start with strange ideas, test them quickly, and keep the
+               parts that feel surprising. Our process is messy, playful, and
+               focused on discovering moments that players will remember.
+            </p>
+            <div style="height: 28px"></div>
+            <div class="process-list">
+               <div class="process-step" data-process>
+                  <div class="num">01</div>
+                  <h3>Prototype the weird idea</h3>
+                  <p>
+                     Start from the mechanic that sounds too strange to pitch
+                     normally.
+                  </p>
+               </div>
+               <div class="process-step" data-process>
+                  <div class="num">02</div>
+                  <h3>Break the system</h3>
+                  <p>Push the prototype until the funny accident appears.</p>
+               </div>
+               <div class="process-step" data-process>
+                  <div class="num">03</div>
+                  <h3>Find the fun</h3>
+                  <p>
+                     Keep the strange part only when it becomes satisfying to
+                     play.
+                  </p>
+               </div>
+               <div class="process-step" data-process>
+                  <div class="num">04</div>
+                  <h3>Build the world</h3>
+                  <p>
+                     Turn the mechanic into characters, places, rules, and
+                     jokes.
+                  </p>
+               </div>
+               <div class="process-step" data-process>
+                  <div class="num">05</div>
+                  <h3>Polish what matters</h3>
+                  <p>
+                     Make the experience readable without sanding away the
+                     personality.
+                  </p>
+               </div>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / STUDIO_VALUES.MANIFESTO</div>
+         <section class="panel" data-panel>
+            <h2>Studio Values</h2>
+            <div class="values-grid">
+               <div class="value" data-tilt>
+                  <h3>Weird is good</h3>
+                  <p>
+                     Kami percaya ide aneh bisa menjadi pengalaman bermain yang
+                     kuat.
+                  </p>
+               </div>
+               <div class="value" data-tilt>
+                  <h3>Gameplay first</h3>
+                  <p>
+                     Visual boleh gila, tapi gameplay harus tetap menyenangkan.
+                  </p>
+               </div>
+               <div class="value" data-tilt>
+                  <h3>Small worlds, big personality</h3>
+                  <p>
+                     Kami suka membuat dunia kecil dengan karakter yang kuat.
+                  </p>
+               </div>
+               <div class="value" data-tilt>
+                  <h3>Make it memorable</h3>
+                  <p>Game yang bagus bukan hanya dimainkan, tapi diingat.</p>
+               </div>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / BEHIND_THE_SCENES.DIR</div>
+         <section class="panel" data-panel>
+            <h2>Behind the Scenes</h2>
+            <div class="devlog-grid">
+               <article class="devlog-card large" data-tilt>
+                  <div class="eyebrow" data-float>Devlog 04</div>
+                  <h3>We accidentally made the slime too powerful.</h3>
+                  <p>
+                     The prototype started as a small movement test. Then the
+                     slime learned to launch itself across traffic, climb
+                     buildings, and emotionally damage street lamps.
+                  </p>
+               </article>
+               <div>
+                  <article class="devlog-card" data-tilt>
+                     <div class="eyebrow" data-float>Concept Note</div>
+                     <h3>The city should feel annoyed, not evil.</h3>
+                     <p>
+                        The world reacts like a tired office worker, not a
+                        villain.
+                     </p>
+                  </article>
+                  <div style="height: 16px"></div>
+                  <article class="devlog-card" data-tilt>
+                     <div class="eyebrow" data-float>Prototype Test</div>
+                     <h3>Players kept throwing trash at the moon.</h3>
+                     <p>So we made it a feature. The moon now has opinions.</p>
+                  </article>
+               </div>
+            </div>
+         </section>
+         <div class="chrome" data-chrome>WINDOW / COMMUNITY_CHANNEL.SYS</div>
+         <section class="panel" id="community" data-panel>
+            <div class="community-box" data-tilt>
+               <div class="community-copy">
+                  <div class="eyebrow" data-float>
+                     Community / Newsletter / Wishlist
+                  </div>
+                  <h2>Join the mess before it becomes a game.</h2>
+                  <p>
+                     Get devlogs, demo announcements, behind-the-scenes chaos,
+                     and early access news from Slop Studio.
+                  </p>
+                  <div class="actions">
+                     <a class="btn primary" data-button href="#"
+                        >Join Discord</a
+                     >
+                     <a class="btn" data-button href="#">Subscribe</a>
+                     <a class="btn" data-button href="#">Wishlist on Steam</a>
+                  </div>
+               </div>
+               <pre class="terminal-note">
+SLOP_MAILER_STATUS: > demo_available: false > slime_power_level: unsafe > devlog_queue: 04 files > community_note: "built with questionable decisions, documented for your safety."</pre
+               >
+            </div>
+         </section>
+         <div class="chrome" data-chrome>
+            WINDOW / CONTACT_AND_PRESS_KIT.FORM
+         </div>
+         <section class="panel" id="contact" data-panel>
+            <h2>Contact / Collaboration</h2>
+            <div class="contact-grid">
+               <div class="contact-card" data-tilt>
+                  <h3>Publisher / Press / Business</h3>
+                  <p>
+                     Want to publish, cover, or collaborate with us? Send us a
+                     message. We probably read emails between fixing bugs and
+                     naming frogs.
+                  </p>
+                  <div class="actions">
+                     <a
+                        class="btn primary"
+                        data-button
+                        href="mailto:hello@slopstudio.games"
+                        >Contact Us</a
+                     >
+                     <a class="btn" data-button href="#">Download Press Kit</a>
+                  </div>
+               </div>
+               <div class="contact-card" data-tilt>
+                  <h3>Studio Channels</h3>
+                  <p>
+                     Email: hello@slopstudio.games<br />
+                     Press: press@slopstudio.games<br />
+                     Discord: /slopstudio<br />
+                     Social: @slopstudio<br />
+                     Location: Somewhere between a bug report and a sandwich
+                     planet.
+                  </p>
+               </div>
+            </div>
+         </section>
+         <footer data-wobble>
+            <span>© 2026 Slop Studio</span>
+            <span>Weird games. Loud worlds. Beautiful chaos.</span>
+         </footer>
+      </main>
+      <script>
+         const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+         ).matches;
+         function clamp(v, lo, hi) {
+            return v < lo ? lo : v > hi ? hi : v;
+         }
+         function lerp(a, b, t) {
+            return a + (b - a) * t;
+         }
+         function smoothstep(e0, e1, x) {
+            const t = clamp((x - e0) / (e1 - e0), 0, 1);
+            return t * t * (3 - 2 * t);
+         }
+         const canvas = document.getElementById("ambient");
+         const ctx = canvas.getContext("2d");
+         const probe = document.getElementById("cursorProbe");
+         let width = 0;
+         let height = 0;
+         let dpr = 1;
+         let startTime = null;
+         let scrollYNow = window.scrollY;
+         let scrollMax = 1;
+         const mouse = {
+            x: window.innerWidth * 0.5,
+            y: window.innerHeight * 0.5,
+            tx: window.innerWidth * 0.5,
+            ty: window.innerHeight * 0.5,
+            down: 0,
+            downTarget: 0,
+            active: 0,
+            activeTarget: 0,
+            clickX: window.innerWidth * 0.5,
+            clickY: window.innerHeight * 0.5,
+            clickPulse: 0,
+         };
+         const buttons = [];
+         const tilts = [];
+         const panels = [];
+         const chromes = [];
+         const processSteps = [];
+         const floats = [];
+         const wobblers = [];
+         const strips = [];
+         const slimes = [];
+         function makeInteractive(selector, store, extra) {
+            document.querySelectorAll(selector).forEach((node, index) => {
+               const item = {
+                  el: node,
+                  index,
+                  hover: 0,
+                  hoverTarget: 0,
+                  press: 0,
+                  pressTarget: 0,
+                  focus: 0,
+                  focusTarget: 0,
+                  cx: 0,
+                  cy: 0,
+                  top: 0,
+                  height: 1,
+                  width: 1,
+               };
+               if (extra) extra(item, node, index);
+               node.addEventListener(
+                  "mouseenter",
+                  () => (item.hoverTarget = 1),
+               );
+               node.addEventListener("mouseleave", () => {
+                  item.hoverTarget = 0;
+                  item.pressTarget = 0;
+               });
+               node.addEventListener("mousedown", () => (item.pressTarget = 1));
+               window.addEventListener("mouseup", () => (item.pressTarget = 0));
+               node.addEventListener("focus", () => (item.focusTarget = 1));
+               node.addEventListener("blur", () => (item.focusTarget = 0));
+               store.push(item);
+            });
+         }
+         makeInteractive("[data-button]", buttons, (item, node) => {
+            item.fill = node.querySelector("::before");
+         });
+         makeInteractive("[data-tilt]", tilts);
+         makeInteractive("[data-panel]", panels);
+         makeInteractive("[data-chrome]", chromes);
+         makeInteractive("[data-process]", processSteps);
+         makeInteractive("[data-float]", floats);
+         makeInteractive("[data-wobble]", wobblers);
+         makeInteractive("[data-pixel-strip]", strips);
+         makeInteractive("[data-slime]", slimes);
+         function cacheLayout() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            scrollMax = Math.max(
+               1,
+               document.documentElement.scrollHeight - height,
+            );
+            const all = buttons.concat(
+               tilts,
+               panels,
+               chromes,
+               processSteps,
+               floats,
+               wobblers,
+               strips,
+               slimes,
+            );
+            for (let i = 0; i < all.length; i++) {
+               const r = all[i].el.getBoundingClientRect();
+               all[i].cx = r.left + r.width * 0.5 + window.scrollX;
+               all[i].cy = r.top + r.height * 0.5 + window.scrollY;
+               all[i].top = r.top + window.scrollY;
+               all[i].height = Math.max(1, r.height);
+               all[i].width = Math.max(1, r.width);
+            }
+         }
+         window.addEventListener("resize", cacheLayout);
+         window.addEventListener(
+            "scroll",
+            () => {
+               scrollYNow = window.scrollY;
+            },
+            { passive: true },
+         );
+         window.addEventListener(
+            "mousemove",
+            (e) => {
+               mouse.tx = e.clientX;
+               mouse.ty = e.clientY;
+               mouse.activeTarget = 1;
+            },
+            { passive: true },
+         );
+         window.addEventListener("mousedown", (e) => {
+            mouse.downTarget = 1;
+            mouse.clickX = e.clientX;
+            mouse.clickY = e.clientY;
+            mouse.clickPulse = 1;
+         });
+         window.addEventListener("mouseup", () => {
+            mouse.downTarget = 0;
+         });
+         function drawAmbient(t) {
+            ctx.clearRect(0, 0, width, height);
+            const scrollT = clamp(scrollYNow / scrollMax, 0, 1);
+            const cell = width < 700 ? 34 : 46;
+            const cols = Math.ceil(width / cell) + 2;
+            const rows = Math.ceil(height / cell) + 2;
+            ctx.lineWidth = 1;
+            for (let y = -1; y < rows; y++) {
+               for (let x = -1; x < cols; x++) {
+                  const px = x * cell;
+                  const py = y * cell;
+                  const dx = px - mouse.x;
+                  const dy = py - mouse.y;
+                  const dist = Math.sqrt(dx * dx + dy * dy);
+                  const influence = clamp(1 - dist / 360, 0, 1);
+                  const wave = Math.sin(
+                     t * 1.8 + x * 0.9 + y * 0.55 + scrollT * 8,
+                  );
+                  const clickDist = Math.sqrt(
+                     (px - mouse.clickX) * (px - mouse.clickX) +
+                        (py - mouse.clickY) * (py - mouse.clickY),
+                  );
+                  const clickRing = Math.sin(
+                     clickDist * 0.045 - (1 - mouse.clickPulse) * 12,
+                  );
+                  const size =
+                     4 +
+                     Math.abs(wave) * 8 +
+                     influence * 18 +
+                     Math.max(0, clickRing) * mouse.clickPulse * 7;
+                  const choose = (x + y * 3) % 7;
+                  if (choose === 0 || choose === 3) {
+                     ctx.fillStyle = "rgba(232, 176, 75, 0.34)";
+                     ctx.fillRect(
+                        px + cell * 0.5 - size * 0.5,
+                        py + cell * 0.5 - size * 0.5,
+                        size,
+                        size,
+                     );
+                  } else if (choose === 1) {
+                     ctx.strokeStyle = "rgba(26, 26, 26, 0.22)";
+                     ctx.strokeRect(px + 12, py + 12, size * 1.2, size * 0.72);
+                  } else if (choose === 2) {
+                     ctx.fillStyle = "rgba(168, 200, 232, 0.55)";
+                     ctx.fillRect(px + 6 + wave * 4, py + 28, size * 1.4, 5);
+                  }
+               }
+            }
+            ctx.strokeStyle = "rgba(26, 26, 26, 0.22)";
+            ctx.beginPath();
+            const amp = 12 + Math.sin(t * 0.7) * 8;
+            for (let x = 0; x <= width; x += 18) {
+               const y =
+                  height * (0.18 + scrollT * 0.58) +
+                  Math.sin(x * 0.018 + t * 1.4) * amp;
+               if (x === 0) ctx.moveTo(x, y);
+               else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+         }
+         function updateMouse(t) {
+            mouse.x += (mouse.tx - mouse.x) * 0.16;
+            mouse.y += (mouse.ty - mouse.y) * 0.16;
+            mouse.down += (mouse.downTarget - mouse.down) * 0.22;
+            mouse.active += (mouse.activeTarget - mouse.active) * 0.08;
+            mouse.clickPulse += (0 - mouse.clickPulse) * 0.035;
+            const wobble = Math.sin(t * 15) * mouse.down * 2;
+            const size = 34 + mouse.down * -8 + Math.sin(t * 4) * 2;
+            probe.style.opacity = String(mouse.active * 0.75);
+            probe.style.transform =
+               "translate3d(" +
+               (mouse.x - size * 0.5) +
+               "px," +
+               (mouse.y - size * 0.5) +
+               "px,0) rotate(" +
+               wobble +
+               "deg) scale(" +
+               size / 34 +
+               ")";
+         }
+         function updateButtons(t) {
+            for (let i = 0; i < buttons.length; i++) {
+               const b = buttons[i];
+               b.hover += (b.hoverTarget - b.hover) * 0.18;
+               b.press += (b.pressTarget - b.press) * 0.28;
+               b.focus += (b.focusTarget - b.focus) * 0.16;
+               const breath = Math.sin(t * 5 + b.index * 0.8) * b.hover;
+               const inhale = -2.5 * b.hover + 5.5 * b.press;
+               const lift = -3 * b.hover + 2 * b.press;
+               const skew = breath * 2.2 + b.press * -4;
+               b.el.style.transform =
+                  "translate3d(" +
+                  breath * 1.6 +
+                  "px," +
+                  lift +
+                  "px,0) skewX(" +
+                  skew +
+                  "deg) scale(" +
+                  (1 + inhale * 0.01) +
+                  ")";
+               b.el.style.opacity = String(0.92 + b.hover * 0.08);
+               const before = b.el;
+               before.style.setProperty("--dummy", b.hover);
+               if (before.children.length || before.tagName === "A") {
+                  before.style.boxShadow = "none";
+               }
+               const fillY = 100 - (b.hover * 100 + b.press * 24);
+               b.el.style.setProperty(
+                  "filter",
+                  b.focus > 0.01 ? "contrast(1.16)" : "contrast(1)",
+               );
+               b.el.style.setProperty("--button-fill-y", fillY + "%");
+               b.el.style.setProperty(
+                  "clip-path",
+                  "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+               );
+               b.el.style.backgroundPosition = "0 " + fillY + "%";
+            }
+         }
+         function updateTilts(t) {
+            for (let i = 0; i < tilts.length; i++) {
+               const item = tilts[i];
+               item.hover += (item.hoverTarget - item.hover) * 0.13;
+               item.press += (item.pressTarget - item.press) * 0.2;
+               const screenCx = item.cx - window.scrollX;
+               const screenCy = item.cy - scrollYNow;
+               const dx = clamp(
+                  (mouse.x - screenCx) / Math.max(1, item.width),
+                  -1,
+                  1,
+               );
+               const dy = clamp(
+                  (mouse.y - screenCy) / Math.max(1, item.height),
+                  -1,
+                  1,
+               );
+               const alive = item.hover;
+               const rx = -dy * 5.5 * alive;
+               const ry = dx * 6.5 * alive;
+               const jitter = Math.sin(t * 13 + i * 2.1) * alive * 1.2;
+               const lift = -10 * alive + item.press * 4;
+               item.el.style.transform =
+                  "perspective(900px) translate3d(" +
+                  jitter * 0.55 +
+                  "px," +
+                  lift +
+                  "px,0) rotateX(" +
+                  rx +
+                  "deg) rotateY(" +
+                  ry +
+                  "deg)";
+            }
+         }
+         function updatePanels(t) {
+            for (let i = 0; i < panels.length; i++) {
+               const item = panels[i];
+               const viewportTop = scrollYNow;
+               const enter = 1 - (item.top - viewportTop) / height;
+               const progress = smoothstep(0.05, 0.55, enter);
+               const offset = (1 - progress) * 26;
+               const micro = Math.sin(t * 0.8 + i) * progress * 1.5;
+               item.el.style.opacity = String(0.08 + progress * 0.92);
+               item.el.style.transform =
+                  "translate3d(0," + (offset + micro) + "px,0)";
+            }
+         }
+         function updateChromes(t) {
+            for (let i = 0; i < chromes.length; i++) {
+               const c = chromes[i];
+               const viewportTop = scrollYNow;
+               const p = smoothstep(
+                  0.15,
+                  0.8,
+                  1 - (c.top - viewportTop) / height,
+               );
+               const scan = Math.sin(t * 2.4 + i * 1.7) * 2.5 * p;
+               c.el.style.transform = "translate3d(" + scan + "px,0,0)";
+               const shine = c.el.style;
+               shine.setProperty("--shine", p);
+            }
+         }
+         function updateProcess(t) {
+            for (let i = 0; i < processSteps.length; i++) {
+               const s = processSteps[i];
+               s.hover += (s.hoverTarget - s.hover) * 0.12;
+               const p = smoothstep(
+                  0.15,
+                  0.85,
+                  1 - (s.top - scrollYNow) / height,
+               );
+               const wave = Math.sin(t * 2.6 + i * 0.9) * 7 * s.hover;
+               const stair = (1 - p) * (16 + i * 7);
+               const lean = Math.sin(t * 1.2 + i) * 1.2 * p;
+               s.el.style.opacity = String(0.2 + p * 0.8);
+               s.el.style.transform =
+                  "translate3d(0," +
+                  (stair - s.hover * 8 + wave * 0.2) +
+                  "px,0) skewY(" +
+                  lean +
+                  "deg)";
+            }
+         }
+         function updateSmallFloats(t) {
+            for (let i = 0; i < floats.length; i++) {
+               const f = floats[i];
+               f.hover += (f.hoverTarget - f.hover) * 0.13;
+               const y = Math.sin(t * 2 + i * 0.7) * (1.8 + f.hover * 3);
+               const x = Math.cos(t * 1.7 + i) * f.hover * 4;
+               f.el.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+            }
+            for (let i = 0; i < wobblers.length; i++) {
+               const w = wobblers[i];
+               const scrollT = clamp(scrollYNow / scrollMax, 0, 1);
+               const j = Math.sin(t * 2.1 + scrollT * 7 + i) * 1.2;
+               w.el.style.transform = "translate3d(" + j + "px,0,0)";
+            }
+            for (let i = 0; i < strips.length; i++) {
+               const strip = strips[i].el;
+               const children = strip.children;
+               for (let k = 0; k < children.length; k++) {
+                  const y = Math.sin(t * 2.2 + k * 0.7) * 4;
+                  const sx = 1 + Math.abs(Math.sin(t * 1.5 + k)) * 0.18;
+                  children[k].style.transform =
+                     "translate3d(0," + y + "px,0) scaleY(" + sx + ")";
+                  children[k].style.transformOrigin = "50% 100%";
+               }
+            }
+            for (let i = 0; i < slimes.length; i++) {
+               const s = slimes[i];
+               const wobble = Math.sin(t * 3.4) * 3;
+               const squash = 1 + Math.sin(t * 2.8) * 0.035;
+               s.el.style.transform =
+                  "translate3d(" +
+                  wobble +
+                  "px,0,0) scale(" +
+                  (1 + squash * 0.02) +
+                  "," +
+                  (1 - squash * 0.015) +
+                  ")";
+            }
+         }
+         function updatePseudoButtonFill() {
+            const styleId = "dynamic-button-fill-style";
+            let style = document.getElementById(styleId);
+            if (!style) {
+               style = document.createElement("style");
+               style.id = styleId;
+               document.head.appendChild(style);
+            }
+            style.textContent =
+               ".btn::before{transform:translateY(var(--button-fill-y,100%));}";
+         }
+         function staticFallback() {
+            document.querySelectorAll("[data-panel]").forEach((el) => {
+               el.style.opacity = "1";
+               el.style.transform = "none";
+            });
+            probe.style.display = "none";
+            ctx.clearRect(0, 0, width, height);
+         }
+         function updateAll(t) {
+            scrollYNow = window.scrollY;
+            if (reduceMotion) {
+               staticFallback();
+               return;
+            }
+            drawAmbient(t);
+            updateMouse(t);
+            updateButtons(t);
+            updateTilts(t);
+            updatePanels(t);
+            updateChromes(t);
+            updateProcess(t);
+            updateSmallFloats(t);
+         }
+         function loop(ts) {
+            if (!startTime) startTime = ts;
+            const t = (ts - startTime) / 1000;
+            updateAll(t);
+            requestAnimationFrame(loop);
+         }
+         cacheLayout();
+         updatePseudoButtonFill();
+         requestAnimationFrame(loop);
+      </script>
+   </body>
+</html> -->

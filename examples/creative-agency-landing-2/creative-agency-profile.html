@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morph — Creative Agency Palangkaraya</title>
+  <style>
+    :root {
+      --blue: #1A46FF;
+      --yellow: #FFE600;
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --white-60: rgba(255,255,255,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--blue);
+      color: var(--white);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+      transition: color 150ms ease-out;
+      cursor: pointer;
+    }
+
+    a:hover {
+      color: var(--yellow);
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      padding: 24px 32px;
+      pointer-events: none;
+    }
+
+    .logo,
+    .nav-links,
+    .close {
+      pointer-events: auto;
+    }
+
+    .logo {
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      font-size: 28px;
+      line-height: 1;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      font-size: 13px;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links a {
+      color: var(--white-60);
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--yellow);
+    }
+
+    .close {
+      justify-self: end;
+      border: 0;
+      background: transparent;
+      color: var(--black);
+      font-size: 32px;
+      line-height: 0.8;
+      font-weight: 900;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    section {
+      position: relative;
+      padding: 64px;
+      border-top: 1px solid var(--white-60);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.65fr);
+      gap: 64px;
+      align-items: end;
+      padding-top: 128px;
+      border-top: 0;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: block;
+      color: var(--white-60);
+      font-size: 12px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(54px, 11vw, 164px);
+      line-height: 0.82;
+      letter-spacing: -0.08em;
+      font-weight: 900;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-description {
+      max-width: 720px;
+      margin-top: 34px;
+      font-size: clamp(22px, 3vw, 36px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 500;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 24px;
+      margin-top: 34px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .hero-meta {
+      position: relative;
+      z-index: 2;
+      align-self: center;
+      font-size: 22px;
+      line-height: 1.4;
+    }
+
+    .hero-meta dl {
+      margin: 0;
+    }
+
+    .hero-meta div {
+      padding: 16px 0;
+      border-top: 1px solid var(--white-60);
+    }
+
+    .hero-meta dt {
+      color: var(--white-60);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+
+    .hero-meta dd {
+      margin: 0;
+    }
+
+    .mark {
+      display: inline;
+      background: var(--yellow);
+      color: var(--black);
+      padding: 0 0.13em 0.03em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .signature {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: min(48vw, 560px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      color: var(--black);
+    }
+
+    .signature svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .signature text {
+      fill: var(--black);
+      font-family: "Times New Roman", Times, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+    }
+
+    .ring-a {
+      transform-origin: 250px 250px;
+      animation: rotateA 90s linear infinite;
+    }
+
+    .ring-b {
+      transform-origin: 250px 250px;
+      animation: rotateB 120s linear infinite;
+    }
+
+    .signature:hover .ring-a,
+    .signature:hover .ring-b {
+      animation-play-state: paused;
+    }
+
+    @keyframes rotateA {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateB {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+      gap: 80px;
+      align-items: start;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 104px);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      font-weight: 900;
+    }
+
+    .big-body {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(26px, 4vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.06em;
+      font-weight: 700;
+    }
+
+    .body-text {
+      margin: 24px 0 0;
+      max-width: 760px;
+      font-size: clamp(20px, 2.4vw, 32px);
+      line-height: 1.22;
+      letter-spacing: -0.04em;
+      font-weight: 500;
+    }
+
+    .services {
+      display: grid;
+      gap: 0;
+    }
+
+    .service-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.48fr) minmax(0, 1fr);
+      gap: 48px;
+      padding: 28px 0;
+      border-top: 1px solid var(--white-60);
+    }
+
+    .service-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .service-name {
+      font-size: clamp(28px, 4vw, 52px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      font-weight: 900;
+    }
+
+    .service-desc {
+      margin: 0;
+      font-size: clamp(19px, 2vw, 28px);
+      line-height: 1.22;
+      letter-spacing: -0.035em;
+      color: var(--white);
+    }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 64px 48px;
+      margin-top: 56px;
+    }
+
+    .work-item {
+      position: relative;
+      padding-top: 20px;
+      border-top: 1px solid var(--white-60);
+    }
+
+    .work-number {
+      color: var(--yellow);
+      font-family: "Times New Roman", Times, serif;
+      font-size: clamp(72px, 9vw, 148px);
+      line-height: 0.8;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+    }
+
+    .work-title {
+      margin: 18px 0 0;
+      font-size: clamp(36px, 5vw, 76px);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      font-weight: 900;
+    }
+
+    .work-desc {
+      margin: 20px 0 0;
+      max-width: 560px;
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+    }
+
+    .tags {
+      margin-top: 18px;
+      color: var(--white-60);
+      font-size: 13px;
+      line-height: 1.6;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .process-list {
+      display: grid;
+      gap: 0;
+      margin-top: 44px;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 32px;
+      padding: 30px 0;
+      border-top: 1px solid var(--white-60);
+    }
+
+    .process-number {
+      color: var(--yellow);
+      font-family: "Times New Roman", Times, serif;
+      font-size: 56px;
+      line-height: 0.9;
+      font-weight: 700;
+    }
+
+    .process-step h3 {
+      margin: 0;
+      font-size: clamp(34px, 4.5vw, 72px);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+    }
+
+    .process-step p {
+      margin: 14px 0 0;
+      max-width: 800px;
+      font-size: clamp(19px, 2vw, 28px);
+      line-height: 1.24;
+      letter-spacing: -0.035em;
+    }
+
+    .philosophy {
+      min-height: 86vh;
+      display: grid;
+      align-items: center;
+    }
+
+    .keyword-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin-top: 40px;
+      max-width: 900px;
+    }
+
+    .keyword-line span {
+      color: var(--white-60);
+      font-size: clamp(18px, 2vw, 30px);
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 48px;
+      margin-top: 48px;
+    }
+
+    blockquote {
+      margin: 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--white-60);
+    }
+
+    blockquote p {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      font-weight: 800;
+    }
+
+    blockquote footer {
+      margin-top: 22px;
+      color: var(--white-60);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .contact {
+      min-height: 92vh;
+      display: grid;
+      align-items: end;
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.7fr);
+      gap: 64px;
+      align-items: end;
+    }
+
+    .contact h2 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(58px, 12vw, 180px);
+      line-height: 0.8;
+      letter-spacing: -0.09em;
+      font-weight: 900;
+    }
+
+    .contact p {
+      margin: 32px 0 0;
+      max-width: 720px;
+      font-size: clamp(22px, 3vw, 38px);
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+      font-weight: 600;
+    }
+
+    .contact-links {
+      display: grid;
+      gap: 16px;
+      font-size: clamp(24px, 3vw, 42px);
+      line-height: 1.1;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .footer-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 24px 64px;
+      color: var(--white-60);
+      font-size: 13px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-top: 1px solid var(--white-60);
+    }
+
+    @media (max-width: 900px) {
+      .nav {
+        grid-template-columns: 1fr auto;
+        padding: 20px 24px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .close {
+        font-size: 30px;
+      }
+
+      section {
+        padding: 24px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: 36px;
+        padding-top: 96px;
+        padding-bottom: 48px;
+      }
+
+      .hero h1 {
+        font-size: clamp(58px, 19vw, 110px);
+      }
+
+      .hero-description {
+        font-size: 24px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        gap: 10px;
+        font-size: 22px;
+      }
+
+      .signature {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 88vw;
+        max-width: 420px;
+        transform: none;
+        margin: 18px auto 0;
+        order: 2;
+      }
+
+      .hero-copy {
+        order: 1;
+      }
+
+      .hero-meta {
+        order: 3;
+        font-size: 20px;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .service-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 26px 0;
+      }
+
+      .works-grid {
+        grid-template-columns: 1fr;
+        gap: 42px;
+        margin-top: 36px;
+      }
+
+      .process-step {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .process-number {
+        font-size: 42px;
+      }
+
+      .testimonials {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .footer-meta {
+        padding: 24px;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="logo" href="#top" aria-label="Morph home">Morph</a>
+
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#works">Works</a>
+        <a href="#process">Process</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <button class="close" aria-label="Decorative close control" onclick="console.log('Decorative close control. No parent action wired.')">×</button>
+    </nav>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow">Creative Agency / Palangkaraya / Founded 2024</span>
+          <h1 id="hero-title">We morph ideas into visual experiences.</h1>
+          <p class="hero-description">
+            <span class="mark">Morph is a creative agency based in Palangkaraya</span>,
+            shaping bold visual identities, digital experiences, and campaigns for brands that want to move differently.
+          </p>
+          <div class="hero-actions" aria-label="Hero actions">
+            <a href="#contact">Start a Project →</a>
+            <a href="#works">View Our Work →</a>
+          </div>
+        </div>
+
+        <div class="signature" aria-hidden="true">
+          <svg viewBox="0 0 500 500">
+            <defs>
+              <path id="loopA" d="M250,88 a162,162 0 1,1 -1,0.1" />
+              <path id="loopB" d="M250,138 a112,112 0 1,1 -1,0.1" />
+            </defs>
+
+            <g class="ring-a">
+              <text>
+                <textPath href="#loopA">
+                  morph creative agency palangkaraya visual identity digital experience campaign direction&nbsp;&nbsp;
+                  morph creative agency palangkaraya visual identity digital experience campaign direction&nbsp;&nbsp;
+                </textPath>
+              </text>
+            </g>
+
+            <g class="ring-b">
+              <text>
+                <textPath href="#loopB">
+                  bold clean experimental strategic editorial human centered&nbsp;&nbsp;
+                  bold clean experimental strategic editorial human centered&nbsp;&nbsp;
+                </textPath>
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <aside class="hero-meta" aria-label="Company metadata">
+          <dl>
+            <div>
+              <dt>Type</dt>
+              <dd>Creative Agency</dd>
+            </div>
+            <div>
+              <dt>Location</dt>
+              <dd>Palangkaraya, Indonesia</dd>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd>Branding, websites, campaigns, motion, digital presence</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <section id="about">
+        <div class="two-col">
+          <div>
+            <span class="eyebrow">About Morph</span>
+            <h2 class="section-title">A space for visual exploration.</h2>
+          </div>
+
+          <div>
+            <p class="big-body">
+              Founded in 2024 in Palangkaraya, <span class="mark">Morph was created as a space for visual exploration, strategic design, and digital storytelling.</span>
+            </p>
+            <p class="body-text">
+              We believe every brand has a shape, rhythm, and personality — our job is to help reveal it through design, motion, content, and interactive experiences.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="services">
+        <div class="two-col">
+          <div>
+            <span class="eyebrow">What We Do</span>
+            <h2 class="section-title">Services for brands that need form.</h2>
+          </div>
+
+          <div class="services">
+            <div class="service-row">
+              <div class="service-name">Brand Identity</div>
+              <p class="service-desc">
+                Membangun identitas visual brand mulai dari logo, warna, tipografi, brand guideline, hingga sistem visual yang konsisten.
+              </p>
+            </div>
+
+            <div class="service-row">
+              <div class="service-name">Web Design & Development</div>
+              <p class="service-desc">
+                Merancang dan membangun website yang modern, responsif, cepat, dan sesuai karakter brand.
+              </p>
+            </div>
+
+            <div class="service-row">
+              <div class="service-name">Social Media Creative</div>
+              <p class="service-desc">
+                Membuat visual campaign, konten promosi, template feed, dan aset digital untuk kebutuhan media sosial.
+              </p>
+            </div>
+
+            <div class="service-row">
+              <div class="service-name">Campaign Direction</div>
+              <p class="service-desc">
+                Membantu merancang konsep campaign, visual direction, copywriting, dan strategi komunikasi kreatif.
+              </p>
+            </div>
+
+            <div class="service-row">
+              <div class="service-name">Motion & Visual Assets</div>
+              <p class="service-desc">
+                Membuat motion graphic, poster digital, visual event, experimental graphic, dan aset promosi lainnya.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="works">
+        <span class="eyebrow">Selected Works</span>
+        <h2 class="section-title">Dummy cases, real direction.</h2>
+
+        <div class="works-grid">
+          <article class="work-item">
+            <div class="work-number">01</div>
+            <h3 class="work-title">Rimba Coffee</h3>
+            <p class="work-desc">
+              Brand identity dan packaging untuk coffee shop lokal dengan pendekatan natural, hangat, dan modern.
+            </p>
+            <div class="tags">Branding / Packaging / Social Media</div>
+          </article>
+
+          <article class="work-item">
+            <div class="work-number">02</div>
+            <h3 class="work-title">Svara Festival</h3>
+            <p class="work-desc">
+              Visual campaign untuk event musik independen dengan gaya ekspresif, bold typography, dan motion poster.
+            </p>
+            <div class="tags">Campaign / Poster Design / Motion</div>
+          </article>
+
+          <article class="work-item">
+            <div class="work-number">03</div>
+            <h3 class="work-title">Kalawa Studio</h3>
+            <p class="work-desc">
+              Website portfolio untuk studio kreatif dengan layout editorial, clean, dan fokus pada visual storytelling.
+            </p>
+            <div class="tags">Web Design / Development / Art Direction</div>
+          </article>
+
+          <article class="work-item">
+            <div class="work-number">04</div>
+            <h3 class="work-title">Urban Plate</h3>
+            <p class="work-desc">
+              Social media system untuk brand makanan modern dengan pendekatan warna kuat dan modular content layout.
+            </p>
+            <div class="tags">Social Media / Creative Direction</div>
+          </article>
+        </div>
+      </section>
+
+      <section id="process">
+        <div class="two-col">
+          <div>
+            <span class="eyebrow">How We Work</span>
+            <h2 class="section-title">From vague ideas to clear systems.</h2>
+          </div>
+
+          <div class="process-list">
+            <div class="process-step">
+              <div class="process-number">01</div>
+              <div>
+                <h3>Discover</h3>
+                <p>Kami memahami brand, target audiens, masalah utama, dan arah visual yang ingin dicapai.</p>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="process-number">02</div>
+              <div>
+                <h3>Define</h3>
+                <p>Kami menyusun strategi kreatif, moodboard, pesan utama, dan sistem visual awal.</p>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="process-number">03</div>
+              <div>
+                <h3>Design</h3>
+                <p>Kami mulai membuat visual, layout, prototype, atau aset kreatif berdasarkan arah yang sudah disepakati.</p>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="process-number">04</div>
+              <div>
+                <h3>Deliver</h3>
+                <p>Kami menyiapkan final asset, file produksi, guideline, atau website siap pakai sesuai kebutuhan project.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="philosophy">
+        <div>
+          <span class="eyebrow">Philosophy</span>
+          <p class="big-body">
+            We do not design just to decorate. <span class="mark">We design to shape perception, build recognition, and create moments people remember.</span>
+          </p>
+
+          <div class="keyword-line" aria-label="Visual keywords">
+            <span>Bold</span>
+            <span>Experimental</span>
+            <span>Strategic</span>
+            <span>Editorial</span>
+            <span>Digital-first</span>
+            <span>Human-centered</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="eyebrow">Testimonials</span>
+        <h2 class="section-title">What clients might say.</h2>
+
+        <div class="testimonials">
+          <blockquote>
+            <p>“Morph helped us turn a vague idea into a visual identity that actually feels like our brand.”</p>
+            <footer>— Andra, Founder of Rimba Coffee</footer>
+          </blockquote>
+
+          <blockquote>
+            <p>“Their design direction made our campaign look more confident and memorable.”</p>
+            <footer>— Nadya, Event Director at Svara Festival</footer>
+          </blockquote>
+        </div>
+      </section>
+
+      <section id="contact" class="contact">
+        <div class="contact-layout">
+          <div>
+            <span class="eyebrow">Contact / CTA</span>
+            <h2>Let’s Morph Your Ideas</h2>
+            <p>
+              Have a brand, campaign, or website idea?
+              <span class="mark">Let’s shape it into something clear, bold, and memorable.</span>
+            </p>
+          </div>
+
+          <div class="contact-links">
+            <a href="mailto:hello@morph.studio">Start a Project →</a>
+            <a href="mailto:hello@morph.studio">hello@morph.studio →</a>
+            <a href="https://instagram.com/morph.studio" target="_blank" rel="noreferrer">@morph.studio →</a>
+            <a href="#" onclick="event.preventDefault()">WhatsApp →</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-meta">
+      <span>Morph Creative Agency</span>
+      <span>Palangkaraya, Indonesia</span>
+      <span>Founded 2024</span>
+    </footer>
+  </div>
+</body>
+</html>

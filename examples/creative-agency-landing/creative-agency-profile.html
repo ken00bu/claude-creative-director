@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Morph — Creative Agency Palangkaraya</title>
+        <style>
+            :root {
+                --paper: #ffffff;
+                --ground-yellow: #f4e600;
+                --ink-green: #5dfb5e;
+                --ink-orange: #ff5a1e;
+                --text-black: #111111;
+                --line: #111111;
+                --space-8: 8px;
+                --space-16: 16px;
+                --space-24: 24px;
+                --space-32: 32px;
+                --space-48: 48px;
+                --space-64: 64px;
+                --space-96: 96px;
+                --space-128: 128px;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--text-black);
+                font-family: Georgia, "Times New Roman", serif;
+                overflow-x: hidden;
+            }
+            body.cursor-active {
+                cursor: none;
+            }
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+            .mono {
+                font-family: "Courier New", monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 12px;
+                line-height: 1.4;
+                font-weight: 700;
+            }
+            .cursor {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 28px;
+                height: 28px;
+                border: 2px solid var(--text-black);
+                background: var(--ink-green);
+                pointer-events: none;
+                z-index: 100;
+                mix-blend-mode: multiply;
+                opacity: 0;
+                will-change: transform, opacity;
+            }
+            .hero {
+                min-height: 100vh;
+                display: grid;
+                grid-template-columns: 45% 55%;
+                border-bottom: 2px solid var(--line);
+            }
+            .hero-left {
+                background: var(--ground-yellow);
+                border-right: 2px solid var(--line);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: var(--space-32);
+            }
+            .brand-row {
+                display: flex;
+                justify-content: space-between;
+                gap: var(--space-24);
+            }
+            .logo {
+                font-family: "Courier New", monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 15px;
+                font-weight: 700;
+            }
+            .hero-copy {
+                max-width: 620px;
+                padding: var(--space-96) 0;
+            }
+            h1 {
+                margin: 0;
+                font-size: clamp(48px, 6.5vw, 92px);
+                line-height: 0.95;
+                letter-spacing: -0.055em;
+                font-weight: 400;
+            }
+            h1 em {
+                font-style: italic;
+                font-weight: 500;
+            }
+            .hero-desc {
+                max-width: 560px;
+                margin: var(--space-32) 0 0;
+                font-size: clamp(20px, 2vw, 28px);
+                line-height: 1.2;
+            }
+            .hero-actions {
+                display: flex;
+                gap: var(--space-8);
+                flex-wrap: wrap;
+                margin-top: var(--space-32);
+            }
+            .btn {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 50px;
+                padding: 0 var(--space-16);
+                border: 2px solid var(--line);
+                background: var(--paper);
+                color: var(--text-black);
+                font-family: "Courier New", monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 12px;
+                font-weight: 700;
+                overflow: hidden;
+                isolation: isolate;
+                will-change: transform, opacity;
+            }
+            .btn.dark {
+                background: var(--text-black);
+                color: var(--paper);
+            }
+            .btn .btn-label {
+                position: relative;
+                z-index: 2;
+                display: inline-block;
+                will-change: transform;
+            }
+            .btn .btn-scan {
+                position: absolute;
+                left: -20%;
+                top: 0;
+                width: 26%;
+                height: 100%;
+                background: var(--ink-orange);
+                z-index: 1;
+                opacity: 0;
+                will-change: transform, opacity;
+            }
+            .btn.dark .btn-scan {
+                background: var(--ink-green);
+            }
+            .hero-meta {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-24);
+            }
+            .riso-field {
+                position: relative;
+                min-height: 100vh;
+                background: var(--paper);
+                overflow: hidden;
+                cursor: crosshair;
+                touch-action: none;
+            }
+            #risoCanvas {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+            section {
+                border-bottom: 2px solid var(--line);
+                padding: var(--space-96) var(--space-32);
+            }
+            .reveal {
+                will-change: transform, opacity;
+            }
+            .section-grid {
+                display: grid;
+                grid-template-columns: 32% 1fr;
+                gap: var(--space-64);
+                max-width: 1440px;
+                margin: 0 auto;
+            }
+            .section-label {
+                position: sticky;
+                top: var(--space-32);
+                align-self: start;
+            }
+            h2 {
+                margin: 0;
+                font-size: clamp(42px, 5vw, 76px);
+                line-height: 0.95;
+                letter-spacing: -0.045em;
+                font-weight: 400;
+            }
+            .lead {
+                margin: 0;
+                font-size: clamp(26px, 3.2vw, 48px);
+                line-height: 1.05;
+                letter-spacing: -0.035em;
+                max-width: 980px;
+            }
+            .body-text {
+                margin: var(--space-32) 0 0;
+                font-size: 22px;
+                line-height: 1.35;
+                max-width: 760px;
+            }
+            .services {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                border-top: 2px solid var(--line);
+                border-left: 2px solid var(--line);
+                margin-top: var(--space-64);
+                perspective: 1200px;
+            }
+            .service {
+                position: relative;
+                min-height: 360px;
+                padding: var(--space-24);
+                border-right: 2px solid var(--line);
+                border-bottom: 2px solid var(--line);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow: hidden;
+                will-change: transform;
+                transform-style: preserve-3d;
+            }
+            .service::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                height: 18px;
+                background: var(--text-black);
+                opacity: 0;
+                transform: translateY(20px);
+                will-change: transform, opacity;
+            }
+            .service:nth-child(2) {
+                background: var(--ground-yellow);
+            }
+            .service:nth-child(4) {
+                background: var(--ink-green);
+            }
+            .service-title {
+                margin: 0;
+                font-size: 30px;
+                line-height: 1;
+                letter-spacing: -0.035em;
+                font-weight: 400;
+            }
+            .service p {
+                margin: var(--space-32) 0 0;
+                font-size: 18px;
+                line-height: 1.3;
+            }
+            .work-list {
+                border-top: 2px solid var(--line);
+                margin-top: var(--space-64);
+            }
+            .work-item {
+                display: grid;
+                grid-template-columns: 90px 1fr 42%;
+                gap: var(--space-32);
+                padding: var(--space-32) 0;
+                border-bottom: 2px solid var(--line);
+                align-items: stretch;
+                perspective: 1200px;
+            }
+            .work-main {
+                will-change: transform;
+            }
+            .work-title {
+                margin: 0;
+                font-size: clamp(34px, 4vw, 64px);
+                line-height: 0.95;
+                letter-spacing: -0.045em;
+                font-weight: 400;
+            }
+            .work-copy {
+                margin: var(--space-16) 0 0;
+                font-size: 20px;
+                line-height: 1.3;
+                max-width: 620px;
+            }
+            .tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--space-8);
+                margin-top: var(--space-24);
+            }
+            .tag {
+                border: 2px solid var(--line);
+                padding: 6px 8px;
+                font-family: "Courier New", monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 11px;
+                font-weight: 700;
+                will-change: transform;
+            }
+            .mini-riso {
+                min-height: 240px;
+                border: 2px solid var(--line);
+                display: grid;
+                grid-template-columns: repeat(8, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                background: var(--paper);
+                overflow: hidden;
+                will-change: transform;
+                transform-style: preserve-3d;
+            }
+            .mini-riso span {
+                border-right: 1px solid var(--line);
+                border-bottom: 1px solid var(--line);
+                will-change: transform, opacity;
+            }
+            .mini-riso span:nth-child(5n) {
+                background: var(--ground-yellow);
+            }
+            .mini-riso span:nth-child(7n) {
+                background: var(--ink-orange);
+            }
+            .mini-riso span:nth-child(11n) {
+                background: var(--ink-green);
+            }
+            .process {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                border-top: 2px solid var(--line);
+                border-left: 2px solid var(--line);
+                margin-top: var(--space-64);
+                perspective: 1200px;
+            }
+            .process-step {
+                min-height: 360px;
+                padding: var(--space-24);
+                border-right: 2px solid var(--line);
+                border-bottom: 2px solid var(--line);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                will-change: transform;
+                transform-style: preserve-3d;
+            }
+            .process-step:nth-child(1) {
+                background: var(--ink-orange);
+            }
+            .process-step:nth-child(3) {
+                background: var(--ground-yellow);
+            }
+            .process-step h3 {
+                margin: 0;
+                font-size: 44px;
+                line-height: 0.95;
+                letter-spacing: -0.04em;
+                font-weight: 400;
+            }
+            .process-step p {
+                margin: var(--space-32) 0 0;
+                font-size: 19px;
+                line-height: 1.3;
+            }
+            .philosophy {
+                background: var(--text-black);
+                color: var(--paper);
+            }
+            .philosophy .section-grid {
+                align-items: end;
+            }
+            .keyword-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                border-top: 2px solid var(--paper);
+                border-left: 2px solid var(--paper);
+                margin-top: var(--space-64);
+            }
+            .keyword {
+                min-height: 120px;
+                padding: var(--space-16);
+                border-right: 2px solid var(--paper);
+                border-bottom: 2px solid var(--paper);
+                display: flex;
+                align-items: end;
+                font-size: clamp(28px, 3vw, 48px);
+                line-height: 0.95;
+                letter-spacing: -0.04em;
+                will-change: transform, opacity;
+            }
+            .testimonials {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-32);
+                margin-top: var(--space-64);
+                perspective: 1200px;
+            }
+            .quote {
+                border: 2px solid var(--line);
+                padding: var(--space-32);
+                min-height: 320px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                will-change: transform;
+                transform-style: preserve-3d;
+            }
+            .quote p {
+                margin: 0;
+                font-size: clamp(28px, 3vw, 44px);
+                line-height: 1.05;
+                letter-spacing: -0.035em;
+            }
+            .contact {
+                background: var(--ground-yellow);
+                min-height: 86vh;
+                display: flex;
+                align-items: center;
+            }
+            .contact-inner {
+                width: 100%;
+                max-width: 1440px;
+                margin: 0 auto;
+            }
+            .contact h2 {
+                max-width: 920px;
+                font-size: clamp(64px, 10vw, 156px);
+                line-height: 0.82;
+            }
+            .contact p {
+                max-width: 720px;
+                margin: var(--space-32) 0 0;
+                font-size: clamp(24px, 3vw, 42px);
+                line-height: 1.1;
+                letter-spacing: -0.035em;
+            }
+            .contact-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--space-8);
+                margin-top: var(--space-48);
+            }
+            .footer-meta {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--space-24);
+                margin-top: var(--space-96);
+            }
+            @media (max-width: 1100px) {
+                .services {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .process {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .work-item {
+                    grid-template-columns: 70px 1fr;
+                }
+                .mini-riso {
+                    grid-column: 1 / -1;
+                }
+            }
+            @media (max-width: 760px) {
+                body.cursor-active {
+                    cursor: auto;
+                }
+                .cursor {
+                    display: none;
+                }
+                .hero {
+                    grid-template-columns: 1fr;
+                }
+                .hero-left {
+                    min-height: 72vh;
+                    border-right: 0;
+                    border-bottom: 2px solid var(--line);
+                    padding: var(--space-24);
+                }
+                .riso-field {
+                    min-height: 38vh;
+                }
+                .hero-meta {
+                    grid-template-columns: 1fr;
+                }
+                section {
+                    padding: var(--space-64) var(--space-24);
+                }
+                .section-grid {
+                    grid-template-columns: 1fr;
+                    gap: var(--space-32);
+                }
+                .section-label {
+                    position: static;
+                }
+                .services,
+                .process,
+                .testimonials,
+                .keyword-grid {
+                    grid-template-columns: 1fr;
+                }
+                .service,
+                .process-step {
+                    min-height: 280px;
+                }
+                .work-item {
+                    grid-template-columns: 1fr;
+                    gap: var(--space-24);
+                }
+                .footer-meta {
+                    grid-template-columns: 1fr;
+                }
+                .brand-row {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="cursor" id="cursor"></div>
+        <main>
+            <section class="hero" id="top">
+                <div class="hero-left">
+                    <div class="brand-row">
+                        <div class="logo">Morph</div>
+                        <div class="mono">Creative Agency<br />Palangkaraya Since 2024</div>
+                    </div>
+                    <div class="hero-copy">
+                        <h1>We <em>morph</em> ideas into visual experiences.</h1>
+                        <p class="hero-desc">
+                            Morph is a creative agency based in Palangkaraya, shaping bold visual identities, digital
+                            experiences, and campaigns for brands that want to move differently.
+                        </p>
+                        <div class="hero-actions">
+                            <a class="btn dark js-button" href="#contact">
+                                <span class="btn-scan"></span> <span class="btn-label">Start a Project</span>
+                            </a>
+                            <a class="btn js-button" href="#work">
+                                <span class="btn-scan"></span> <span class="btn-label">View Our Work</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-meta mono">
+                        <div>Identity Website Campaign Motion</div>
+                        <div>Experimental Modern Confident Professional</div>
+                    </div>
+                </div>
+                <div class="riso-field" id="risoField" aria-label="Interactive riso dither field">
+                    <canvas id="risoCanvas"></canvas>
+                </div>
+            </section>
+            <section id="about" class="reveal">
+                <div class="section-grid">
+                    <div class="section-label mono">01 About Morph</div>
+                    <div>
+                        <p class="lead">
+                            Founded in 2024 in Palangkaraya, Morph was created as a space for visual exploration,
+                            strategic design, and digital storytelling.
+                        </p>
+                        <p class="body-text">
+                            Kami percaya setiap brand punya bentuk, ritme, dan karakter sendiri. Tugas kami adalah
+                            membantu memunculkannya melalui desain, konten, motion, dan pengalaman digital.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section id="services" class="reveal">
+                <div class="section-grid">
+                    <div class="section-label mono">02 What We Do</div>
+                    <div><h2>Design systems for brands that refuse to look ordinary.</h2></div>
+                </div>
+                <div class="services">
+                    <article class="service js-card">
+                        <div class="mono">01 Service</div>
+                        <div>
+                            <h3 class="service-title">Brand Identity</h3>
+                            <p>
+                                Membangun identitas visual brand mulai dari logo, warna, tipografi, guideline, hingga
+                                sistem visual yang konsisten.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="service js-card">
+                        <div class="mono">02 Service</div>
+                        <div>
+                            <h3 class="service-title">Web Design & Development</h3>
+                            <p>
+                                Merancang dan membangun website yang modern, responsif, cepat, dan sesuai karakter
+                                brand.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="service js-card">
+                        <div class="mono">03 Service</div>
+                        <div>
+                            <h3 class="service-title">Social Media Creative</h3>
+                            <p>
+                                Membuat visual campaign, konten promosi, template feed, dan aset digital untuk kebutuhan
+                                media sosial.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="service js-card">
+                        <div class="mono">04 Service</div>
+                        <div>
+                            <h3 class="service-title">Campaign Direction</h3>
+                            <p>
+                                Membantu merancang konsep campaign, visual direction, copywriting, dan strategi
+                                komunikasi kreatif.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="service js-card">
+                        <div class="mono">05 Service</div>
+                        <div>
+                            <h3 class="service-title">Motion & Visual Assets</h3>
+                            <p>
+                                Membuat motion graphic, poster digital, visual event, experimental graphic, dan aset
+                                promosi lainnya.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            <section id="work" class="reveal">
+                <div class="section-grid">
+                    <div class="section-label mono">03 Selected Works</div>
+                    <div>
+                        <h2>Selected works, built as visual systems.</h2>
+                        <div class="work-list">
+                            <article class="work-item js-work">
+                                <div class="mono">01</div>
+                                <div class="work-main">
+                                    <h3 class="work-title">Rimba Coffee</h3>
+                                    <p class="work-copy">
+                                        Brand identity dan packaging untuk coffee shop lokal dengan pendekatan natural,
+                                        hangat, dan modern.
+                                    </p>
+                                    <div class="tags">
+                                        <span class="tag">Branding</span> <span class="tag">Packaging</span>
+                                        <span class="tag">Social Media</span>
+                                    </div>
+                                </div>
+                                <div class="mini-riso js-mini-riso" aria-hidden="true"></div>
+                            </article>
+                            <article class="work-item js-work">
+                                <div class="mono">02</div>
+                                <div class="work-main">
+                                    <h3 class="work-title">Svara Festival</h3>
+                                    <p class="work-copy">
+                                        Visual campaign untuk event musik independen dengan gaya ekspresif, bold
+                                        typography, dan motion poster.
+                                    </p>
+                                    <div class="tags">
+                                        <span class="tag">Campaign</span> <span class="tag">Poster Design</span>
+                                        <span class="tag">Motion</span>
+                                    </div>
+                                </div>
+                                <div class="mini-riso js-mini-riso" aria-hidden="true"></div>
+                            </article>
+                            <article class="work-item js-work">
+                                <div class="mono">03</div>
+                                <div class="work-main">
+                                    <h3 class="work-title">Kalawa Studio</h3>
+                                    <p class="work-copy">
+                                        Website portfolio untuk studio kreatif dengan layout editorial, clean, dan fokus
+                                        pada visual storytelling.
+                                    </p>
+                                    <div class="tags">
+                                        <span class="tag">Web Design</span> <span class="tag">Development</span>
+                                        <span class="tag">Art Direction</span>
+                                    </div>
+                                </div>
+                                <div class="mini-riso js-mini-riso" aria-hidden="true"></div>
+                            </article>
+                            <article class="work-item js-work">
+                                <div class="mono">04</div>
+                                <div class="work-main">
+                                    <h3 class="work-title">Urban Plate</h3>
+                                    <p class="work-copy">
+                                        Social media system untuk brand makanan modern dengan pendekatan warna kuat dan
+                                        modular content layout.
+                                    </p>
+                                    <div class="tags">
+                                        <span class="tag">Social Media</span>
+                                        <span class="tag">Creative Direction</span>
+                                    </div>
+                                </div>
+                                <div class="mini-riso js-mini-riso" aria-hidden="true"></div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="process" class="reveal">
+                <div class="section-grid">
+                    <div class="section-label mono">04 How We Work</div>
+                    <div><h2>Clear process. Strange ideas. Useful outcomes.</h2></div>
+                </div>
+                <div class="process">
+                    <article class="process-step js-card">
+                        <div class="mono">01</div>
+                        <div>
+                            <h3>Discover</h3>
+                            <p>
+                                Kami memahami brand, target audiens, masalah utama, dan arah visual yang ingin dicapai.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="process-step js-card">
+                        <div class="mono">02</div>
+                        <div>
+                            <h3>Define</h3>
+                            <p>Kami menyusun strategi kreatif, moodboard, pesan utama, dan sistem visual awal.</p>
+                        </div>
+                    </article>
+                    <article class="process-step js-card">
+                        <div class="mono">03</div>
+                        <div>
+                            <h3>Design</h3>
+                            <p>
+                                Kami mulai membuat visual, layout, prototype, atau aset kreatif berdasarkan arah yang
+                                sudah disepakati.
+                            </p>
+                        </div>
+                    </article>
+                    <article class="process-step js-card">
+                        <div class="mono">04</div>
+                        <div>
+                            <h3>Deliver</h3>
+                            <p>
+                                Kami menyiapkan final asset, file produksi, guideline, atau website siap pakai sesuai
+                                kebutuhan project.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            <section class="philosophy reveal" id="philosophy">
+                <div class="section-grid">
+                    <div class="section-label mono">05 Philosophy</div>
+                    <div>
+                        <p class="lead">
+                            We do not design just to decorate. We design to shape perception, build recognition, and
+                            create moments people remember.
+                        </p>
+                        <div class="keyword-grid">
+                            <div class="keyword js-keyword">Bold</div>
+                            <div class="keyword js-keyword">Experimental</div>
+                            <div class="keyword js-keyword">Strategic</div>
+                            <div class="keyword js-keyword">Editorial</div>
+                            <div class="keyword js-keyword">Digital-first</div>
+                            <div class="keyword js-keyword">Human-centered</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="testimonials" class="reveal">
+                <div class="section-grid">
+                    <div class="section-label mono">06 Testimonials</div>
+                    <div>
+                        <h2>Things clients said after the shape became clear.</h2>
+                        <div class="testimonials">
+                            <article class="quote js-card">
+                                <p>
+                                    “Morph helped us turn a vague idea into a visual identity that actually feels like
+                                    our brand.”
+                                </p>
+                                <div class="mono">Andra Founder of Rimba Coffee</div>
+                            </article>
+                            <article class="quote js-card">
+                                <p>“Their design direction made our campaign look more confident and memorable.”</p>
+                                <div class="mono">Nadya Event Director at Svara Festival</div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="contact reveal" id="contact">
+                <div class="contact-inner">
+                    <div class="mono">07 Contact</div>
+                    <h2>Let’s Morph Your Ideas</h2>
+                    <p>
+                        Have a brand, campaign, or website idea? Let’s shape it into something clear, bold, and
+                        memorable.
+                    </p>
+                    <div class="contact-links">
+                        <a class="btn dark js-button" href="mailto:hello@morph.studio">
+                            <span class="btn-scan"></span> <span class="btn-label">Start a Project</span>
+                        </a>
+                        <a class="btn js-button" href="mailto:hello@morph.studio">
+                            <span class="btn-scan"></span> <span class="btn-label">Email Us</span>
+                        </a>
+                        <a class="btn js-button" href="#">
+                            <span class="btn-scan"></span> <span class="btn-label">Instagram</span>
+                        </a>
+                        <a class="btn js-button" href="#">
+                            <span class="btn-scan"></span> <span class="btn-label">WhatsApp</span>
+                        </a>
+                    </div>
+                    <div class="footer-meta mono">
+                        <div>Email<br />hello@morph.studio</div>
+                        <div>Instagram<br />@morph.studio</div>
+                        <div>Location<br />Palangkaraya Indonesia</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            function clamp(v, lo, hi) {
+                return v < lo ? lo : v > hi ? hi : v;
+            }
+            function lerp(a, b, t) {
+                return a + (b - a) * t;
+            }
+            function smoothstep(e0, e1, x) {
+                const t = clamp((x - e0) / (e1 - e0), 0, 1);
+                return t * t * (3 - 2 * t);
+            }
+            const field = document.getElementById("risoField");
+            const canvas = document.getElementById("risoCanvas");
+            const ctx = canvas.getContext("2d");
+            const cursor = document.getElementById("cursor");
+            const colors = {
+                paper: "#FFFFFF",
+                yellow: "#F4E600",
+                green: "#5DFB5E",
+                orange: "#FF5A1E",
+                black: "#111111",
+            };
+            const cellSize = 48;
+            const perturbRadius = 140;
+            const flipProbability = reduceMotion ? 0 : 0.18;
+            let dpr = Math.max(1, window.devicePixelRatio || 1);
+            let width = 0;
+            let height = 0;
+            let cols = 0;
+            let rows = 0;
+            let cellGrid = [];
+            let risoPointer = null;
+            let lastIdle = 0;
+            let lastIdleKey = "";
+            let startTime = null;
+            let mouseX = window.innerWidth * 0.5;
+            let mouseY = window.innerHeight * 0.5;
+            let cursorX = mouseX;
+            let cursorY = mouseY;
+            let cursorHover = 0;
+            let cursorTarget = 0;
+            const buttons = [];
+            const cards = [];
+            const works = [];
+            const miniRisos = [];
+            const reveals = [];
+            const keywords = [];
+            let viewportH = window.innerHeight;
+            let documentH = document.documentElement.scrollHeight;
+            let scrollYNow = window.scrollY;
+            function randomFrom(list) {
+                return list[Math.floor(Math.random() * list.length)];
+            }
+            function hashNoise(x, y, seed) {
+                const n = Math.sin(x * 127.1 + y * 311.7 + seed * 74.7) * 43758.5453123;
+                return n - Math.floor(n);
+            }
+            function weightedPick(items) {
+                const total = items.reduce((sum, item) => sum + item.weight, 0);
+                let r = Math.random() * total;
+                for (const item of items) {
+                    r -= item.weight;
+                    if (r <= 0) return item.value;
+                }
+                return items[items.length - 1].value;
+            }
+            function pickRestInk(x, y) {
+                const seamDistance = x / Math.max(1, width);
+                const density = 0.84 - seamDistance * 0.62;
+                const n = hashNoise(x * 0.02, y * 0.02, 9);
+                if (n > density) return "none";
+                return weightedPick([
+                    { value: "orange", weight: 0.44 + seamDistance * 0.8 },
+                    { value: "yellow", weight: 0.28 },
+                    { value: "green", weight: 0.24 * (1 - seamDistance) },
+                    { value: "overlap", weight: 0.18 * (1 - seamDistance) },
+                ]);
+            }
+            function pickRestShape(x, y) {
+                const seamDistance = x / Math.max(1, width);
+                return weightedPick([
+                    { value: "square", weight: 0.35 + seamDistance * 1.3 },
+                    { value: "circle", weight: 0.5 * (1 - seamDistance) },
+                    { value: "scallop", weight: 0.38 * (1 - seamDistance) },
+                ]);
+            }
+            function pickRandomInk() {
+                return weightedPick([
+                    { value: "none", weight: 0.25 },
+                    { value: "yellow", weight: 0.22 },
+                    { value: "green", weight: 0.22 },
+                    { value: "orange", weight: 0.42 },
+                    { value: "overlap", weight: 0.18 },
+                ]);
+            }
+            function pickRandomShape() {
+                return randomFrom(["square", "circle", "scallop"]);
+            }
+            function initRiso() {
+                dpr = Math.max(1, window.devicePixelRatio || 1);
+                const rect = field.getBoundingClientRect();
+                width = Math.max(1, rect.width);
+                height = Math.max(1, rect.height);
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                canvas.style.width = width + "px";
+                canvas.style.height = height + "px";
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                cols = Math.ceil(width / cellSize);
+                rows = Math.ceil(height / cellSize);
+                cellGrid = [];
+                for (let y = 0; y < rows; y++) {
+                    const row = [];
+                    for (let x = 0; x < cols; x++) {
+                        const px = x * cellSize;
+                        const py = y * cellSize;
+                        const restShape = pickRestShape(px, py);
+                        const restInk = pickRestInk(px, py);
+                        row.push({ x, y, shape: restShape, ink: restInk, restShape, restInk, settle: 0 });
+                    }
+                    cellGrid.push(row);
+                }
+            }
+            function drawShape(shape, x, y, size, ink) {
+                const inset = 5;
+                const sx = x + inset;
+                const sy = y + inset;
+                const s = size - inset * 2;
+                function fillWithInk() {
+                    if (ink === "yellow") {
+                        ctx.fillStyle = colors.yellow;
+                        ctx.fill();
+                    } else if (ink === "green") {
+                        ctx.fillStyle = colors.green;
+                        ctx.fill();
+                    } else if (ink === "orange") {
+                        ctx.fillStyle = colors.orange;
+                        ctx.fill();
+                    } else if (ink === "overlap") {
+                        ctx.fillStyle = colors.green;
+                        ctx.fill();
+                        ctx.save();
+                        ctx.globalCompositeOperation = "multiply";
+                        ctx.fillStyle = colors.orange;
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+                ctx.beginPath();
+                if (shape === "circle") {
+                    ctx.arc(x + size / 2, y + size / 2, s / 2, 0, Math.PI * 2);
+                    fillWithInk();
+                    return;
+                }
+                if (shape === "scallop") {
+                    const r = s / 4;
+                    ctx.arc(sx + r, sy + r, r, Math.PI, Math.PI * 1.5);
+                    ctx.arc(sx + s - r, sy + r, r, Math.PI * 1.5, Math.PI * 2);
+                    ctx.arc(sx + s - r, sy + s - r, r, 0, Math.PI * 0.5);
+                    ctx.arc(sx + r, sy + s - r, r, Math.PI * 0.5, Math.PI);
+                    ctx.closePath();
+                    fillWithInk();
+                    return;
+                }
+                ctx.rect(sx, sy, s, s);
+                fillWithInk();
+            }
+            function stepCellTowardRest(cell) {
+                cell.settle += 1;
+                if (cell.settle >= 6) {
+                    cell.shape = cell.restShape;
+                    cell.ink = cell.restInk;
+                    cell.settle = 0;
+                }
+            }
+            function updateRiso(timeMs) {
+                if (risoPointer) {
+                    for (let rowIndex = 0; rowIndex < cellGrid.length; rowIndex++) {
+                        const row = cellGrid[rowIndex];
+                        for (let i = 0; i < row.length; i++) {
+                            const cell = row[i];
+                            const cx = cell.x * cellSize + cellSize / 2;
+                            const cy = cell.y * cellSize + cellSize / 2;
+                            const dx = cx - risoPointer.x;
+                            const dy = cy - risoPointer.y;
+                            const d = Math.sqrt(dx * dx + dy * dy);
+                            if (d < perturbRadius) {
+                                const chance = flipProbability * (1 - d / perturbRadius);
+                                if (Math.random() < chance) {
+                                    cell.shape = pickRandomShape();
+                                    cell.ink = pickRandomInk();
+                                    cell.settle = 0;
+                                }
+                            } else if (cell.shape !== cell.restShape || cell.ink !== cell.restInk) {
+                                stepCellTowardRest(cell);
+                            }
+                        }
+                    }
+                } else {
+                    for (let rowIndex = 0; rowIndex < cellGrid.length; rowIndex++) {
+                        const row = cellGrid[rowIndex];
+                        for (let i = 0; i < row.length; i++) {
+                            const cell = row[i];
+                            if (cell.shape !== cell.restShape || cell.ink !== cell.restInk) {
+                                stepCellTowardRest(cell);
+                            }
+                        }
+                    }
+                }
+                if (!reduceMotion && timeMs - lastIdle > 850) {
+                    lastIdle = timeMs;
+                    for (let i = 0; i < 4; i++) {
+                        const x = Math.floor(Math.random() * cols);
+                        const y = Math.floor(Math.random() * rows);
+                        const key = x + ":" + y;
+                        if (key === lastIdleKey) continue;
+                        lastIdleKey = key;
+                        const cell = cellGrid[y] && cellGrid[y][x];
+                        if (!cell) continue;
+                        cell.shape = pickRandomShape();
+                        cell.ink = pickRandomInk();
+                        cell.settle = 0;
+                    }
+                }
+                ctx.fillStyle = colors.paper;
+                ctx.fillRect(0, 0, width, height);
+                for (let rowIndex = 0; rowIndex < cellGrid.length; rowIndex++) {
+                    const row = cellGrid[rowIndex];
+                    for (let i = 0; i < row.length; i++) {
+                        const cell = row[i];
+                        if (cell.ink === "none") continue;
+                        const x = cell.x * cellSize;
+                        const y = cell.y * cellSize;
+                        drawShape(cell.shape, x, y, cellSize, cell.ink);
+                    }
+                }
+            }
+            function setRisoPointerFromEvent(event) {
+                const rect = field.getBoundingClientRect();
+                const source = event.touches ? event.touches[0] : event;
+                risoPointer = { x: source.clientX - rect.left, y: source.clientY - rect.top };
+            }
+            function setupButtons() {
+                document.querySelectorAll(".js-button").forEach((el) => {
+                    const label = el.querySelector(".btn-label");
+                    const scan = el.querySelector(".btn-scan");
+                    const item = {
+                        el,
+                        label,
+                        scan,
+                        hover: 0,
+                        hoverTarget: 0,
+                        press: 0,
+                        pressTarget: 0,
+                        seed: Math.random() * 100,
+                    };
+                    el.addEventListener("mouseenter", () => {
+                        item.hoverTarget = 1;
+                        cursorTarget = 1;
+                    });
+                    el.addEventListener("mouseleave", () => {
+                        item.hoverTarget = 0;
+                        item.pressTarget = 0;
+                        cursorTarget = 0;
+                    });
+                    el.addEventListener("mousedown", () => {
+                        item.pressTarget = 1;
+                    });
+                    el.addEventListener("mouseup", () => {
+                        item.pressTarget = 0;
+                    });
+                    el.addEventListener("focus", () => {
+                        item.hoverTarget = 1;
+                    });
+                    el.addEventListener("blur", () => {
+                        item.hoverTarget = 0;
+                        item.pressTarget = 0;
+                    });
+                    buttons.push(item);
+                });
+            }
+            function setupCards() {
+                document.querySelectorAll(".js-card").forEach((el) => {
+                    const item = { el, hover: 0, hoverTarget: 0, cx: 0, cy: 0, w: 1, h: 1, seed: Math.random() * 100 };
+                    el.addEventListener("mouseenter", () => {
+                        item.hoverTarget = 1;
+                        cursorTarget = 1;
+                    });
+                    el.addEventListener("mouseleave", () => {
+                        item.hoverTarget = 0;
+                        cursorTarget = 0;
+                    });
+                    cards.push(item);
+                });
+            }
+            function setupWorks() {
+                document.querySelectorAll(".js-work").forEach((el) => {
+                    const main = el.querySelector(".work-main");
+                    const mini = el.querySelector(".js-mini-riso");
+                    const tags = Array.from(el.querySelectorAll(".tag"));
+                    const item = {
+                        el,
+                        main,
+                        mini,
+                        tags,
+                        hover: 0,
+                        hoverTarget: 0,
+                        cx: 0,
+                        cy: 0,
+                        w: 1,
+                        h: 1,
+                        seed: Math.random() * 100,
+                    };
+                    el.addEventListener("mouseenter", () => {
+                        item.hoverTarget = 1;
+                        cursorTarget = 1;
+                    });
+                    el.addEventListener("mouseleave", () => {
+                        item.hoverTarget = 0;
+                        cursorTarget = 0;
+                    });
+                    works.push(item);
+                });
+            }
+            function setupMiniRisos() {
+                document.querySelectorAll(".js-mini-riso").forEach((mini, miniIndex) => {
+                    const cells = [];
+                    for (let i = 0; i < 48; i++) {
+                        const block = document.createElement("span");
+                        if ((i + miniIndex) % 13 === 0) block.style.background = "#111111";
+                        if ((i + miniIndex * 2) % 17 === 0) block.style.background = "#FFFFFF";
+                        mini.appendChild(block);
+                        cells.push({
+                            el: block,
+                            seed: Math.random() * 20,
+                            phase: (i % 8) * 0.2 + Math.floor(i / 8) * 0.12,
+                        });
+                    }
+                    miniRisos.push({ el: mini, cells });
+                });
+            }
+            function setupReveals() {
+                document.querySelectorAll(".reveal").forEach((el, index) => {
+                    reveals.push({ el, top: 0, height: 1, seed: index * 0.71 });
+                });
+            }
+            function setupKeywords() {
+                document.querySelectorAll(".js-keyword").forEach((el, index) => {
+                    keywords.push({ el, index });
+                });
+            }
+            function cacheLayout() {
+                viewportH = window.innerHeight;
+                documentH = document.documentElement.scrollHeight;
+                for (let i = 0; i < cards.length; i++) {
+                    const rect = cards[i].el.getBoundingClientRect();
+                    cards[i].cx = rect.left + rect.width * 0.5 + window.scrollX;
+                    cards[i].cy = rect.top + rect.height * 0.5 + window.scrollY;
+                    cards[i].w = rect.width;
+                    cards[i].h = rect.height;
+                }
+                for (let i = 0; i < works.length; i++) {
+                    const rect = works[i].el.getBoundingClientRect();
+                    works[i].cx = rect.left + rect.width * 0.5 + window.scrollX;
+                    works[i].cy = rect.top + rect.height * 0.5 + window.scrollY;
+                    works[i].w = rect.width;
+                    works[i].h = rect.height;
+                }
+                for (let i = 0; i < reveals.length; i++) {
+                    const rect = reveals[i].el.getBoundingClientRect();
+                    reveals[i].top = rect.top + window.scrollY;
+                    reveals[i].height = rect.height;
+                }
+            }
+            function updateCursor() {
+                if (reduceMotion) return;
+                cursorX += (mouseX - cursorX) * 0.22;
+                cursorY += (mouseY - cursorY) * 0.22;
+                cursorHover += (cursorTarget - cursorHover) * 0.18;
+                const s = 1 + cursorHover * 1.45;
+                const r = cursorHover * 45;
+                cursor.style.opacity = String(0.85);
+                cursor.style.transform =
+                    "translate3d(" +
+                    (cursorX - 14) +
+                    "px," +
+                    (cursorY - 14) +
+                    "px,0) rotate(" +
+                    r +
+                    "deg) scale(" +
+                    s +
+                    ")";
+            }
+            function updateButtons(t) {
+                for (let i = 0; i < buttons.length; i++) {
+                    const b = buttons[i];
+                    b.hover += (b.hoverTarget - b.hover) * 0.18;
+                    b.press += (b.pressTarget - b.press) * 0.28;
+                    const inhale = Math.sin(b.hover * Math.PI);
+                    const pulse = Math.sin(t * 8 + b.seed) * b.hover;
+                    const scaleX = 1 - inhale * 0.035 + b.press * 0.075;
+                    const scaleY = 1 + inhale * 0.055 - b.press * 0.045;
+                    const y = -b.hover * 2 + b.press * 3;
+                    const rotate = pulse * 0.45;
+                    b.el.style.transform =
+                        "translate3d(0," + y + "px,0) rotate(" + rotate + "deg) scale(" + scaleX + "," + scaleY + ")";
+                    const labelY = Math.sin(t * 13 + b.seed) * b.hover * 1.7 - b.press * 1.5;
+                    b.label.style.transform = "translate3d(0," + labelY + "px,0)";
+                    const scanX = lerp(-120, 460, b.hover);
+                    b.scan.style.opacity = String(0.95 * b.hover);
+                    b.scan.style.transform = "translate3d(" + scanX + "%,0,0) skewX(-16deg)";
+                }
+            }
+            function updateCards(t) {
+                const pageMouseX = mouseX + window.scrollX;
+                const pageMouseY = mouseY + window.scrollY;
+                for (let i = 0; i < cards.length; i++) {
+                    const c = cards[i];
+                    c.hover += (c.hoverTarget - c.hover) * 0.16;
+                    const dx = clamp((pageMouseX - c.cx) / Math.max(1, c.w), -1, 1);
+                    const dy = clamp((pageMouseY - c.cy) / Math.max(1, c.h), -1, 1);
+                    const breathe = Math.sin(t * 2.3 + c.seed) * 0.8 * c.hover;
+                    const rx = -dy * 5.5 * c.hover;
+                    const ry = dx * 6.5 * c.hover;
+                    const z = 18 * c.hover + breathe;
+                    const y = -6 * c.hover;
+                    c.el.style.transform =
+                        "translate3d(0," + y + "px," + z + "px) rotateX(" + rx + "deg) rotateY(" + ry + "deg)";
+                }
+            }
+            function updateWorks(t) {
+                const pageMouseX = mouseX + window.scrollX;
+                const pageMouseY = mouseY + window.scrollY;
+                for (let i = 0; i < works.length; i++) {
+                    const w = works[i];
+                    w.hover += (w.hoverTarget - w.hover) * 0.16;
+                    const dx = clamp((pageMouseX - w.cx) / Math.max(1, w.w), -1, 1);
+                    const dy = clamp((pageMouseY - w.cy) / Math.max(1, w.h), -1, 1);
+                    const nudge = Math.sin(t * 3 + w.seed) * w.hover;
+                    w.main.style.transform =
+                        "translate3d(" + (w.hover * 16 + nudge * 2) + "px,0,0) rotate(" + dx * 0.7 * w.hover + "deg)";
+                    w.mini.style.transform =
+                        "translate3d(0," +
+                        -w.hover * 8 +
+                        "px,0) rotateX(" +
+                        -dy * 5 * w.hover +
+                        "deg) rotateY(" +
+                        dx * 7 * w.hover +
+                        "deg)";
+                    for (let j = 0; j < w.tags.length; j++) {
+                        const tag = w.tags[j];
+                        const offset = Math.sin(t * 5 + j * 0.8 + w.seed) * 3 * w.hover;
+                        tag.style.transform = "translate3d(0," + offset + "px,0)";
+                    }
+                }
+            }
+            function updateMiniRisos(t) {
+                if (reduceMotion) return;
+                for (let i = 0; i < miniRisos.length; i++) {
+                    const mini = miniRisos[i];
+                    for (let j = 0; j < mini.cells.length; j++) {
+                        const cell = mini.cells[j];
+                        const wave = Math.sin(t * 2.2 + cell.phase + cell.seed);
+                        const snap = Math.abs(wave) > 0.965 ? 1 : 0;
+                        const lift = snap * 8;
+                        cell.el.style.transform = "translate3d(0," + -lift + "px,0)";
+                        cell.el.style.opacity = String(1 - snap * 0.18);
+                    }
+                }
+            }
+            function updateReveals() {
+                if (reduceMotion) {
+                    for (let i = 0; i < reveals.length; i++) {
+                        reveals[i].el.style.opacity = "1";
+                        reveals[i].el.style.transform = "translate3d(0,0,0)";
+                    }
+                    return;
+                }
+                for (let i = 0; i < reveals.length; i++) {
+                    const r = reveals[i];
+                    const start = r.top - viewportH * 0.88;
+                    const end = r.top + r.height * 0.2;
+                    const p = smoothstep(start, end, scrollYNow);
+                    const shaped = Math.sin(p * Math.PI * 0.5);
+                    const y = (1 - shaped) * 44;
+                    const rot = (1 - shaped) * -1.6;
+                    r.el.style.opacity = String(0.18 + shaped * 0.82);
+                    r.el.style.transform = "translate3d(0," + y + "px,0) rotate(" + rot + "deg)";
+                }
+            }
+            function updateKeywords(t) {
+                for (let i = 0; i < keywords.length; i++) {
+                    const k = keywords[i];
+                    const beat = Math.sin(t * 2.1 + k.index * 0.9);
+                    const lift = Math.max(0, beat) * 5;
+                    k.el.style.transform = "translate3d(0," + -lift + "px,0)";
+                }
+            }
+            function loop(ts) {
+                if (!startTime) startTime = ts;
+                const t = (ts - startTime) / 1000;
+                scrollYNow = window.scrollY;
+                updateRiso(ts);
+                updateCursor();
+                updateButtons(t);
+                updateCards(t);
+                updateWorks(t);
+                updateMiniRisos(t);
+                updateReveals();
+                updateKeywords(t);
+                requestAnimationFrame(loop);
+            }
+            window.addEventListener("mousemove", (event) => {
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+                document.body.classList.add("cursor-active");
+            });
+            window.addEventListener("mousedown", () => {
+                cursorTarget = 1;
+            });
+            window.addEventListener("mouseup", () => {
+                cursorTarget = 0;
+            });
+            field.addEventListener("mousemove", setRisoPointerFromEvent);
+            field.addEventListener("mouseleave", () => {
+                risoPointer = null;
+            });
+            field.addEventListener("touchstart", setRisoPointerFromEvent, { passive: true });
+            field.addEventListener("touchmove", setRisoPointerFromEvent, { passive: true });
+            field.addEventListener("touchend", () => {
+                risoPointer = null;
+            });
+            window.addEventListener("resize", () => {
+                initRiso();
+                cacheLayout();
+            });
+            setupMiniRisos();
+            setupButtons();
+            setupCards();
+            setupWorks();
+            setupReveals();
+            setupKeywords();
+            initRiso();
+            cacheLayout();
+            requestAnimationFrame(loop);
+        </script>
+    </body>
+</html>

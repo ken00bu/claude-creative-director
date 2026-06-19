@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kana Alya Kumalasari — Portfolio</title>
+
+  <style>
+    :root {
+      --paper: #f4f1eb;
+      --ink: #151515;
+      --muted: #73706a;
+      --line: #d8d2c8;
+      --soft: #e9e3d8;
+      --hard-gray: #b9b7b2;
+      --dark-gray: #2b2b2b;
+      --orange: #e86f24;
+      --sphere: #a23b2a;
+      --object-blue: #3e5f8a;
+      --object-green: #8a9b65;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(21, 21, 21, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21, 21, 21, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 42px 42px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .cursor-ghost {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(21, 21, 21, 0.42);
+      background: rgba(244, 241, 235, 0.45);
+      position: fixed;
+      left: 0;
+      top: 0;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0);
+    }
+
+    .site-shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .topbar {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--ink);
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .wordmark {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 6vw, 4.8rem);
+      line-height: 0.82;
+      letter-spacing: -0.12em;
+      font-weight: 900;
+      position: relative;
+      display: inline-block;
+      transform: skewX(-4deg);
+      filter: contrast(1.2);
+    }
+
+    .wordmark::before,
+    .wordmark::after {
+      content: "KANA";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .wordmark::before {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(21, 21, 21, 0.42);
+      transform: translate(5px, -2px);
+      clip-path: polygon(0 0, 100% 0, 100% 24%, 0 32%);
+    }
+
+    .wordmark::after {
+      color: rgba(21, 21, 21, 0.24);
+      transform: translate(-4px, 4px);
+      clip-path: polygon(0 68%, 100% 58%, 100% 100%, 0 100%);
+    }
+
+    .brand-meta {
+      border-left: 1px solid var(--ink);
+      padding-left: 12px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      max-width: 260px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .status-pill {
+      background: var(--orange);
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 9px 12px;
+      font-weight: 800;
+      min-width: 112px;
+      text-align: center;
+    }
+
+    .hero {
+      min-height: 720px;
+      padding: 86px 0 96px;
+      position: relative;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .hero-copy {
+      max-width: 680px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .eyebrow {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4.8rem, 13vw, 12rem);
+      line-height: 0.78;
+      letter-spacing: -0.09em;
+      margin-bottom: 26px;
+      max-width: 880px;
+    }
+
+    .role {
+      font-size: clamp(1.45rem, 3vw, 2.8rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+      max-width: 560px;
+      margin-bottom: 26px;
+      font-weight: 800;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 1.8vw, 1.32rem);
+      line-height: 1.55;
+      max-width: 590px;
+      color: #2f2f2f;
+      margin-bottom: 16px;
+    }
+
+    .lead.alt {
+      color: var(--muted);
+      max-width: 540px;
+      font-size: 1rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+
+    .btn {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .object-stage {
+      position: absolute;
+      right: -72px;
+      top: 112px;
+      width: min(48vw, 580px);
+      height: 520px;
+      z-index: 1;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      perspective: 1100px;
+    }
+
+    .object-cluster {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: clusterDrift 8s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes clusterDrift {
+      from {
+        translate: 0 0;
+      }
+      to {
+        translate: 14px -10px;
+      }
+    }
+
+    .obj {
+      position: absolute;
+      border: 1px solid rgba(21, 21, 21, 0.75);
+    }
+
+    .sphere {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      left: 108px;
+      top: 138px;
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,255,255,0.28), transparent 18%),
+        radial-gradient(circle at 72% 74%, rgba(21,21,21,0.28), transparent 30%),
+        repeating-radial-gradient(circle at 45% 50%, rgba(255,255,255,0.08) 0 1px, transparent 1px 4px),
+        linear-gradient(135deg, #b94a33, var(--sphere) 55%, #74281d);
+      overflow: hidden;
+    }
+
+    .sphere::after {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background-image:
+        radial-gradient(rgba(21,21,21,0.22) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px);
+      background-size: 7px 7px, 11px 11px;
+      opacity: 0.55;
+    }
+
+    .prism {
+      width: 180px;
+      height: 128px;
+      left: 254px;
+      top: 60px;
+      background:
+        linear-gradient(125deg, var(--hard-gray) 0 48%, #d4d1c9 48% 52%, #8f8e89 52% 100%);
+      clip-path: polygon(12% 0, 100% 22%, 82% 100%, 0 76%);
+    }
+
+    .slab {
+      width: 210px;
+      height: 82px;
+      left: 36px;
+      top: 306px;
+      background: var(--dark-gray);
+      transform: rotate(-12deg);
+    }
+
+    .slab::after {
+      content: "visual / story / system";
+      position: absolute;
+      color: #e8e2d7;
+      font-family: "Courier New", monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      left: 18px;
+      top: 32px;
+      white-space: nowrap;
+    }
+
+    .cube {
+      width: 116px;
+      height: 116px;
+      left: 350px;
+      top: 286px;
+      background:
+        linear-gradient(45deg, rgba(21,21,21,0.2) 0 1px, transparent 1px 16px),
+        var(--object-blue);
+      transform: rotate(10deg);
+    }
+
+    .gear {
+      width: 128px;
+      height: 128px;
+      left: 276px;
+      top: 378px;
+      background: var(--hard-gray);
+      clip-path: polygon(
+        50% 0%, 58% 20%, 78% 12%, 74% 34%, 96% 42%,
+        76% 53%, 88% 72%, 65% 69%, 58% 96%, 45% 76%,
+        23% 88%, 28% 63%, 4% 55%, 26% 45%, 13% 24%,
+        38% 29%
+      );
+    }
+
+    .gear::after {
+      content: "";
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      left: 42px;
+      top: 42px;
+    }
+
+    .token {
+      width: 94px;
+      height: 94px;
+      left: 42px;
+      top: 70px;
+      background: var(--object-green);
+      transform: rotate(21deg);
+      display: grid;
+      place-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+    }
+
+    section {
+      padding: 92px 0;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.6fr;
+      gap: clamp(28px, 6vw, 96px);
+      align-items: start;
+    }
+
+    .section-label {
+      position: sticky;
+      top: 24px;
+    }
+
+    .section-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.9rem, 7vw, 6.4rem);
+      line-height: 0.86;
+      letter-spacing: -0.08em;
+      margin-bottom: 0;
+    }
+
+    .body-copy {
+      font-size: clamp(1rem, 1.6vw, 1.22rem);
+      line-height: 1.65;
+      color: #2d2d2d;
+      max-width: 760px;
+    }
+
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--ink);
+      margin-top: 34px;
+    }
+
+    .highlight {
+      padding: 18px;
+      min-height: 112px;
+      border-right: 1px solid var(--ink);
+      display: flex;
+      align-items: flex-end;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .highlight:last-child {
+      border-right: 0;
+    }
+
+    .service-list,
+    .process-list,
+    .testimonial-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .service-card,
+    .process-card,
+    .testimonial-card {
+      border: 1px solid var(--ink);
+      background: rgba(244, 241, 235, 0.72);
+      padding: clamp(20px, 3vw, 34px);
+    }
+
+    .service-card {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .num {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 3rem;
+      line-height: 0.8;
+      letter-spacing: -0.08em;
+      color: var(--muted);
+    }
+
+    h3 {
+      font-size: clamp(1.3rem, 2.6vw, 2.25rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 14px;
+    }
+
+    .card-text {
+      color: #393939;
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+    .works {
+      display: grid;
+      gap: 16px;
+    }
+
+    .work-card {
+      border: 1px solid var(--ink);
+      background: var(--soft);
+      min-height: 260px;
+      display: grid;
+      grid-template-columns: 1fr 1.12fr;
+    }
+
+    .work-visual {
+      border-right: 1px solid var(--ink);
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(21,21,21,0.08) 1px, transparent 1px),
+        linear-gradient(rgba(21,21,21,0.08) 1px, transparent 1px),
+        #d7d2c8;
+      background-size: 28px 28px;
+    }
+
+    .work-visual::before {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,0.24), transparent 22%),
+        repeating-radial-gradient(circle, rgba(21,21,21,0.12) 0 1px, transparent 1px 5px),
+        var(--sphere);
+      left: 24px;
+      top: 34px;
+      border: 1px solid var(--ink);
+    }
+
+    .work-card:nth-child(2) .work-visual::before {
+      border-radius: 0;
+      transform: rotate(-8deg);
+      background: var(--object-blue);
+    }
+
+    .work-card:nth-child(3) .work-visual::before {
+      clip-path: polygon(50% 0, 100% 74%, 20% 100%, 0 26%);
+      border-radius: 0;
+      background: var(--object-green);
+    }
+
+    .work-visual::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 84px;
+      right: 34px;
+      bottom: 30px;
+      border: 1px solid var(--ink);
+      background: var(--hard-gray);
+      transform: rotate(11deg);
+    }
+
+    .work-content {
+      padding: clamp(22px, 4vw, 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 36px;
+    }
+
+    .category {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin-bottom: 18px;
+    }
+
+    .short {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.6rem, 3vw, 3rem);
+      line-height: 0.94;
+      letter-spacing: -0.07em;
+      margin: 0;
+    }
+
+    .process-card {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 22px;
+    }
+
+    .skills-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .tag-panel {
+      border: 1px solid var(--ink);
+      padding: 24px;
+      background: rgba(244, 241, 235, 0.7);
+    }
+
+    .tag-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      border: 1px solid var(--ink);
+      padding: 9px 11px;
+      font-size: 0.88rem;
+      background: transparent;
+    }
+
+    .statement {
+      padding: clamp(34px, 7vw, 74px);
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .statement h2 {
+      margin-bottom: 28px;
+    }
+
+    .statement p {
+      font-size: clamp(1.15rem, 2vw, 1.7rem);
+      line-height: 1.45;
+      letter-spacing: -0.04em;
+      max-width: 940px;
+      margin-bottom: 0;
+    }
+
+    .testimonial-card blockquote {
+      margin: 0 0 24px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 2.6vw, 2.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.06em;
+    }
+
+    .testimonial-card cite {
+      font-style: normal;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+    }
+
+    .contact-box {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      background: var(--soft);
+    }
+
+    .contact-main {
+      padding: clamp(28px, 5vw, 62px);
+      border-right: 1px solid var(--ink);
+    }
+
+    .contact-main h2 {
+      margin-bottom: 28px;
+    }
+
+    .contact-info {
+      padding: clamp(24px, 4vw, 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .info-line {
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 14px;
+    }
+
+    .info-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    footer {
+      padding: 42px 0;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .footer-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 6vw, 5.5rem);
+      line-height: 0.86;
+      letter-spacing: -0.08em;
+      margin-bottom: 12px;
+    }
+
+    .footer-small {
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 470px;
+    }
+
+    .copyright {
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        align-items: flex-start;
+        padding: 18px 0;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 58px;
+      }
+
+      .object-stage {
+        position: relative;
+        width: 100%;
+        height: 420px;
+        right: auto;
+        top: auto;
+        margin-top: 42px;
+      }
+
+      .section-grid,
+      .work-card,
+      .contact-box,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-label {
+        position: static;
+      }
+
+      .work-visual,
+      .contact-main {
+        border-right: 0;
+      }
+
+      .work-visual {
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .highlights,
+      .skills-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .highlight {
+        border-right: 0;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .highlight:last-child {
+        border-bottom: 0;
+      }
+
+      .service-card,
+      .process-card {
+        grid-template-columns: 1fr;
+      }
+
+      .copyright {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .site-shell {
+        width: min(100% - 22px, var(--max));
+      }
+
+      .brand {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand-meta {
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .nav a {
+        display: none;
+      }
+
+      .object-stage {
+        height: 340px;
+      }
+
+      .sphere {
+        width: 150px;
+        height: 150px;
+        left: 80px;
+        top: 110px;
+      }
+
+      .prism {
+        width: 136px;
+        height: 96px;
+        left: 180px;
+        top: 44px;
+      }
+
+      .cube {
+        width: 92px;
+        height: 92px;
+        left: 224px;
+        top: 230px;
+      }
+
+      .gear {
+        width: 102px;
+        height: 102px;
+        left: 176px;
+        top: 284px;
+      }
+
+      .slab {
+        width: 180px;
+        left: 18px;
+        top: 250px;
+      }
+
+      .token {
+        left: 20px;
+      }
+
+      section {
+        padding: 68px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+  <div class="cursor-ghost"></div>
+
+  <header class="site-shell topbar">
+    <div class="brand">
+      <div class="wordmark">KANA</div>
+      <div class="brand-meta">Creative Designer & Digital Storyteller</div>
+    </div>
+
+    <nav class="nav" aria-label="Primary Navigation">
+      <a href="#work">Work</a>
+      <a href="#process">Process</a>
+      <a href="#contact">Contact</a>
+      <div class="status-pill" id="clock">00:00:00</div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="site-shell">
+        <div class="hero-copy">
+          <div class="eyebrow">Portfolio Website — Indonesia</div>
+          <h1>Kana Alya Kumalasari</h1>
+          <p class="role">Creative Designer & Digital Storyteller</p>
+          <p class="lead">
+            Saya membantu brand, bisnis, dan individu membangun identitas visual yang kuat melalui desain yang rapi, komunikatif, dan mudah diingat.
+          </p>
+          <p class="lead alt">
+            Saya percaya bahwa desain bukan hanya tentang tampilan, tetapi tentang bagaimana sebuah pesan bisa dirasakan, dipahami, dan diingat oleh orang yang melihatnya.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn" href="#work">View My Work</a>
+            <a class="btn secondary" href="#contact">Contact Me</a>
+          </div>
+        </div>
+
+        <div class="object-stage" aria-hidden="true">
+          <div class="object-cluster" id="objectCluster">
+            <div class="obj token">K</div>
+            <div class="obj prism"></div>
+            <div class="obj sphere"></div>
+            <div class="obj slab"></div>
+            <div class="obj cube"></div>
+            <div class="obj gear"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">01 — About</div>
+          <h2>About Kana</h2>
+        </div>
+
+        <div>
+          <p class="body-copy">
+            Halo, saya Kana Alya Kumalasari. Saya tertarik pada dunia desain, visual branding, dan pengalaman digital. Bagi saya, setiap karya harus punya alasan: kenapa warna itu dipilih, kenapa layout dibuat seperti itu, dan bagaimana desain bisa membantu orang memahami sebuah pesan dengan lebih mudah.
+          </p>
+          <p class="body-copy">
+            Saya senang mengerjakan proyek yang menggabungkan estetika, struktur, dan cerita. Dalam proses kreatif, saya selalu mencoba memahami kebutuhan audiens terlebih dahulu sebelum mulai membuat visual.
+          </p>
+
+          <div class="highlights">
+            <div class="highlight">Based in Indonesia</div>
+            <div class="highlight">Focused on visual communication</div>
+            <div class="highlight">Interested in branding, digital content, and creative direction</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">02 — Services</div>
+          <h2>What I Do</h2>
+        </div>
+
+        <div class="service-list">
+          <article class="service-card">
+            <div class="num">01</div>
+            <div>
+              <h3>Visual Identity</h3>
+              <p class="card-text">
+                Membantu membangun identitas visual untuk brand, mulai dari logo, warna, tipografi, hingga elemen visual pendukung.
+              </p>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="num">02</div>
+            <div>
+              <h3>Social Media Design</h3>
+              <p class="card-text">
+                Membuat desain konten sosial media yang konsisten, menarik, dan sesuai dengan karakter brand.
+              </p>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="num">03</div>
+            <div>
+              <h3>Portfolio & Presentation Design</h3>
+              <p class="card-text">
+                Menyusun tampilan presentasi, deck, atau portfolio agar informasi terlihat lebih jelas dan profesional.
+              </p>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="num">04</div>
+            <div>
+              <h3>Digital Creative Direction</h3>
+              <p class="card-text">
+                Membantu menentukan arah visual sebuah proyek agar pesan, mood, dan tampilan terasa selaras.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">03 — Selected Works</div>
+          <h2>Selected Works</h2>
+        </div>
+
+        <div class="works">
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true"></div>
+            <div class="work-content">
+              <div>
+                <div class="category">Project 01 — Brand Identity</div>
+                <h3>Bloom Studio Branding</h3>
+                <p class="card-text">
+                  Bloom Studio adalah konsep brand untuk studio kreatif yang berfokus pada produk handmade dan lifestyle. Proyek ini mencakup logo, warna brand, layout sosial media, dan elemen visual pendukung.
+                </p>
+              </div>
+              <p class="short">A soft and memorable identity system for a modern handmade studio.</p>
+            </div>
+          </article>
+
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true"></div>
+            <div class="work-content">
+              <div>
+                <div class="category">Project 02 — Social Media Campaign</div>
+                <h3>Luma Coffee Campaign</h3>
+                <p class="card-text">
+                  Luma Coffee adalah konsep campaign untuk kedai kopi lokal yang ingin memperkenalkan menu seasonal. Fokus proyek ini adalah membuat konten visual yang hangat, mudah dikenali, dan cocok untuk promosi digital.
+                </p>
+              </div>
+              <p class="short">A visual campaign for a local coffee brand with a warm digital presence.</p>
+            </div>
+          </article>
+
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true"></div>
+            <div class="work-content">
+              <div>
+                <div class="category">Project 03 — Website Content & Portfolio Direction</div>
+                <h3>Aruna Personal Portfolio</h3>
+                <p class="card-text">
+                  Aruna adalah konsep portfolio personal untuk seorang fotografer. Proyek ini berfokus pada penyusunan narasi, struktur halaman, dan cara menampilkan karya agar terasa personal namun tetap profesional.
+                </p>
+              </div>
+              <p class="short">A clean portfolio narrative for a visual creator.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">04 — Process</div>
+          <h2>My Creative Process</h2>
+        </div>
+
+        <div class="process-list">
+          <article class="process-card">
+            <div class="num">01</div>
+            <div>
+              <h3>Understand</h3>
+              <p class="card-text">
+                Saya mulai dengan memahami tujuan proyek, siapa audiensnya, dan pesan utama yang ingin disampaikan.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-card">
+            <div class="num">02</div>
+            <div>
+              <h3>Explore</h3>
+              <p class="card-text">
+                Saya mengumpulkan referensi, menyusun arah visual, dan mencoba beberapa kemungkinan konsep.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-card">
+            <div class="num">03</div>
+            <div>
+              <h3>Create</h3>
+              <p class="card-text">
+                Saya mulai membangun desain utama dengan memperhatikan komposisi, konsistensi, dan fungsi.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-card">
+            <div class="num">04</div>
+            <div>
+              <h3>Refine</h3>
+              <p class="card-text">
+                Saya meninjau ulang detail desain, memperbaiki bagian yang kurang kuat, dan memastikan hasil akhirnya siap digunakan.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">05 — Skills</div>
+          <h2>Skills & Tools</h2>
+        </div>
+
+        <div class="skills-wrap">
+          <div class="tag-panel">
+            <div class="tag-title">Skills</div>
+            <div class="tags">
+              <span class="tag">Brand Identity</span>
+              <span class="tag">Layout Design</span>
+              <span class="tag">Social Media Design</span>
+              <span class="tag">Creative Direction</span>
+              <span class="tag">Presentation Design</span>
+              <span class="tag">Visual Storytelling</span>
+              <span class="tag">Content Design</span>
+            </div>
+          </div>
+
+          <div class="tag-panel">
+            <div class="tag-title">Tools</div>
+            <div class="tags">
+              <span class="tag">Figma</span>
+              <span class="tag">Adobe Photoshop</span>
+              <span class="tag">Adobe Illustrator</span>
+              <span class="tag">Canva</span>
+              <span class="tag">Notion</span>
+              <span class="tag">Google Slides</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="site-shell">
+        <div class="statement">
+          <div class="section-kicker">06 — Personal Statement</div>
+          <h2>Design With Intention</h2>
+          <p>
+            Saya suka desain yang punya tujuan jelas. Setiap elemen visual harus membantu menyampaikan sesuatu, bukan hanya menjadi dekorasi. Karena itu, saya selalu berusaha membuat desain yang bukan hanya terlihat menarik, tetapi juga terasa tepat untuk pesan yang ingin dibawa.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="site-shell section-grid">
+        <div class="section-label">
+          <div class="section-kicker">07 — Testimonials</div>
+          <h2>What People Say</h2>
+        </div>
+
+        <div class="testimonial-list">
+          <article class="testimonial-card">
+            <blockquote>
+              “Kana mampu menerjemahkan ide yang masih abstrak menjadi visual yang rapi dan mudah dipahami.”
+            </blockquote>
+            <cite>Nadia Putri — Small Business Owner</cite>
+          </article>
+
+          <article class="testimonial-card">
+            <blockquote>
+              “Proses kerjanya jelas, komunikatif, dan hasil akhirnya sesuai dengan karakter brand yang kami inginkan.”
+            </blockquote>
+            <cite>Raka Pratama — Creative Lead</cite>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="site-shell">
+        <div class="contact-box">
+          <div class="contact-main">
+            <div class="section-kicker">08 — Contact</div>
+            <h2>Let’s Create Something Together</h2>
+            <p class="body-copy">
+              Saya terbuka untuk proyek branding, desain konten, portfolio, presentasi, atau kolaborasi kreatif lainnya. Jika kamu punya ide yang ingin dikembangkan secara visual, mari mulai dari obrolan sederhana.
+            </p>
+            <div class="cta-row">
+              <a class="btn" href="mailto:kana.alya@email.com">Send Me a Message</a>
+            </div>
+          </div>
+
+          <aside class="contact-info">
+            <div class="info-line">
+              <span class="info-label">Email</span>
+              <span class="info-value">kana.alya@email.com</span>
+            </div>
+            <div class="info-line">
+              <span class="info-label">Instagram</span>
+              <span class="info-value">@kanaalya</span>
+            </div>
+            <div class="info-line">
+              <span class="info-label">Location</span>
+              <span class="info-value">Indonesia</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-shell">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-name">Kana Alya Kumalasari</div>
+        <div class="footer-small">
+          Creative Designer & Digital Storyteller<br />
+          Built as a personal space to share selected works, ideas, and creative explorations.
+        </div>
+      </div>
+
+      <div class="copyright">
+        © 2026 Kana Alya Kumalasari. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const clock = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    const cluster = document.getElementById("objectCluster");
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    window.addEventListener("pointermove", (event) => {
+      targetX = (event.clientX / window.innerWidth - 0.5) * 2;
+      targetY = (event.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function moveCluster() {
+      mouseX += (targetX - mouseX) * 0.08;
+      mouseY += (targetY - mouseY) * 0.08;
+
+      const rotateY = mouseX * 9;
+      const rotateX = mouseY * -7;
+      const shiftX = mouseX * 18;
+      const shiftY = mouseY * 14;
+
+      cluster.style.transform =
+        `translate3d(${shiftX}px, ${shiftY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+      requestAnimationFrame(moveCluster);
+    }
+
+    moveCluster();
+
+    const ghosts = Array.from(document.querySelectorAll(".cursor-ghost"));
+    const trail = ghosts.map(() => ({
+      x: -100,
+      y: -100
+    }));
+
+    let cursor = {
+      x: -100,
+      y: -100,
+      active: false,
+      lastMove: 0
+    };
+
+    window.addEventListener("pointermove", (event) => {
+      cursor.x = event.clientX;
+      cursor.y = event.clientY;
+      cursor.active = true;
+      cursor.lastMove = performance.now();
+    });
+
+    function renderTrail() {
+      const now = performance.now();
+      const moving = now - cursor.lastMove < 180;
+
+      trail[0].x += (cursor.x - trail[0].x) * 0.38;
+      trail[0].y += (cursor.y - trail[0].y) * 0.38;
+
+      for (let i = 1; i < trail.length; i++) {
+        trail[i].x += (trail[i - 1].x - trail[i].x) * 0.32;
+        trail[i].y += (trail[i - 1].y - trail[i].y) * 0.32;
+      }
+
+      ghosts.forEach((ghost, index) => {
+        const scale = 1 - index * 0.07;
+        const opacity = moving ? Math.max(0, 0.42 - index * 0.045) : 0;
+
+        ghost.style.opacity = opacity;
+        ghost.style.transform =
+          `translate3d(${trail[index].x - 9}px, ${trail[index].y - 9}px, 0) scale(${scale})`;
+      });
+
+      requestAnimationFrame(renderTrail);
+    }
+
+    renderTrail();
+  </script>
+</body>
+</html>

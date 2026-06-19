@@ -1,0 +1,1012 @@
+Berikut adalah landing page lengkap untuk **Morph Creative Agency** dengan implementasi strict dari design system **Riso Dither Intervention** — menggunakan dua-half layout eksperimental di hero, typography editorial Spectral, dan interactive generative art field.
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morph — Creative Agency</title>
+    <meta name="description" content="Morph is a creative agency based in Palangkaraya. We shape bold visual identities, digital experiences, and campaigns for brands that want to move differently.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital,wght@0,400;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --paper: #FFFFFF;
+            --ground-yellow: #F4E600;
+            --ink-green: #5DFB5E;
+            --ink-orange: #FF5A1E;
+            --ink-olive: #5B5119;
+            --text-black: #111111;
+            --cell-size: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: auto;
+            font-size: 18px;
+        }
+
+        body {
+            font-family: 'Spectral', serif;
+            background-color: var(--paper);
+            color: var(--text-black);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem;
+        }
+
+        /* No gradients, no shadows, no border-radius allowed */
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            mix-blend-mode: difference;
+            color: var(--paper);
+        }
+
+        .nav-logo {
+            font-family: 'Spectral', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: inherit;
+            text-decoration: none;
+            position: relative;
+            transition: none;
+        }
+
+        .nav-links a:hover {
+            border-bottom: 2px solid currentColor;
+        }
+
+        /* Hero Section — Two Half Layout */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-left {
+            width: 45%;
+            background-color: var(--ground-yellow);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-right {
+            width: 55%;
+            position: relative;
+            background-color: var(--paper);
+            overflow: hidden;
+        }
+
+        #dither-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .hero-headline {
+            font-size: clamp(40px, 6vw, 72px);
+            line-height: 1.15;
+            font-weight: 400;
+            margin-bottom: 32px;
+            max-width: 90%;
+        }
+
+        .hero-headline em {
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            max-width: 400px;
+            margin-bottom: 48px;
+            line-height: 1.4;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            border: 2px solid var(--text-black);
+            background: var(--text-black);
+            color: var(--paper);
+            cursor: pointer;
+            transition: none;
+        }
+
+        .btn:hover {
+            background: var(--ink-orange);
+            border-color: var(--ink-orange);
+            color: var(--paper);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-black);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-black);
+            color: var(--paper);
+        }
+
+        /* Section Spacing */
+        section {
+            padding: 128px 48px;
+            position: relative;
+        }
+
+        .section-label {
+            display: block;
+            margin-bottom: 24px;
+            color: var(--ink-olive);
+        }
+
+        /* About Section */
+        #about {
+            background: var(--paper);
+        }
+
+        .about-content {
+            max-width: 800px;
+        }
+
+        .about-headline {
+            font-size: clamp(32px, 4vw, 56px);
+            line-height: 1.2;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .about-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            max-width: 640px;
+        }
+
+        /* Services */
+        #services {
+            background: var(--paper);
+            padding-top: 64px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2px;
+            margin-top: 64px;
+        }
+
+        .service-card {
+            padding: 48px;
+            background: var(--paper);
+            border: 2px solid var(--text-black);
+            position: relative;
+            transition: none;
+        }
+
+        .service-card:nth-child(1) { background: var(--ink-green); border-color: var(--ink-green); }
+        .service-card:nth-child(2) { background: var(--ink-orange); border-color: var(--ink-orange); color: var(--paper); }
+        .service-card:nth-child(3) { background: var(--paper); }
+        .service-card:nth-child(4) { background: var(--ink-olive); border-color: var(--ink-olive); color: var(--paper); }
+        .service-card:nth-child(5) { background: var(--ground-yellow); border-color: var(--text-black); }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Works Section */
+        #works {
+            background: var(--text-black);
+            color: var(--paper);
+            padding-bottom: 64px;
+        }
+
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            margin-top: 64px;
+        }
+
+        .work-item {
+            aspect-ratio: 4/3;
+            background: var(--ink-olive);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 32px;
+        }
+
+        .work-item:nth-child(1) { background: #2a2410; }
+        .work-item:nth-child(2) { background: var(--ink-green); color: var(--text-black); }
+        .work-item:nth-child(3) { background: var(--ground-yellow); color: var(--text-black); }
+        .work-item:nth-child(4) { background: var(--ink-orange); color: var(--paper); }
+
+        .work-item:hover {
+            filter: brightness(1.1);
+        }
+
+        .work-item h3 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .work-meta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .work-number {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Process Section */
+        #process {
+            background: var(--paper);
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 48px;
+            margin-top: 64px;
+        }
+
+        .step {
+            border-left: 4px solid var(--text-black);
+            padding-left: 24px;
+            min-height: 200px;
+        }
+
+        .step:nth-child(1) { border-color: var(--ink-green); }
+        .step:nth-child(2) { border-color: var(--ground-yellow); }
+        .step:nth-child(3) { border-color: var(--ink-orange); }
+        .step:nth-child(4) { border-color: var(--ink-olive); }
+
+        .step-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            display: block;
+            margin-bottom: 16px;
+            color: var(--text-black);
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .step p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* Philosophy Section */
+        #philosophy {
+            background: var(--ground-yellow);
+            text-align: center;
+            padding: 192px 48px;
+        }
+
+        .philosophy-quote {
+            font-size: clamp(28px, 4vw, 48px);
+            line-height: 1.3;
+            max-width: 900px;
+            margin: 0 auto 48px;
+            font-weight: 400;
+        }
+
+        .philosophy-quote em {
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .keywords {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .keywords span {
+            border-bottom: 2px solid var(--text-black);
+            padding-bottom: 4px;
+        }
+
+        /* Testimonials */
+        #testimonials {
+            background: var(--paper);
+            padding: 128px 48px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+            margin-top: 64px;
+        }
+
+        .testimonial {
+            border: 2px solid var(--text-black);
+            padding: 48px;
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: '"';
+            font-size: 4rem;
+            line-height: 1;
+            color: var(--ink-orange);
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-family: 'Spectral', serif;
+        }
+
+        .testimonial p {
+            font-size: 1.25rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial cite {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Contact Section */
+        #contact {
+            background: var(--ground-yellow);
+            text-align: center;
+            padding: 192px 48px;
+        }
+
+        .contact-headline {
+            font-size: clamp(36px, 6vw, 80px);
+            line-height: 1.1;
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+
+        .contact-text {
+            max-width: 600px;
+            margin: 0 auto 48px;
+            font-size: 1.25rem;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .contact-links a {
+            color: var(--text-black);
+            text-decoration: none;
+            border-bottom: 2px solid var(--text-black);
+            padding-bottom: 4px;
+            transition: none;
+        }
+
+        .contact-links a:hover {
+            background: var(--text-black);
+            color: var(--ground-yellow);
+            border-bottom: 2px solid var(--text-black);
+            padding: 8px 16px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-black);
+            color: var(--paper);
+            padding: 48px;
+            text-align: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            html {
+                font-size: 16px;
+            }
+
+            nav {
+                padding: 24px;
+                mix-blend-mode: normal;
+                background: var(--text-black);
+                color: var(--paper);
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            #hero {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .hero-left, .hero-right {
+                width: 100%;
+                min-height: 50vh;
+            }
+
+            .hero-left {
+                padding: 96px 24px 48px;
+            }
+
+            section {
+                padding: 64px 24px;
+            }
+
+            .works-grid,
+            .process-steps,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-headline {
+                font-size: clamp(32px, 10vw, 48px);
+            }
+
+            .contact-headline {
+                font-size: clamp(32px, 10vw, 56px);
+            }
+
+            #philosophy {
+                padding: 96px 24px;
+            }
+
+            .keywords {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#hero" class="nav-logo">Morph.</a>
+        <div class="nav-links mono">
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#works">Work</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section: Two-Half Layout with Riso Dither -->
+    <section id="hero">
+        <div class="hero-left">
+            <h1 class="hero-headline">
+                Morph is a creative agency based in Palangkaraya, shaping <em>bold</em> visual identities, digital experiences, and campaigns for brands that want to move differently.
+            </h1>
+            <p class="hero-sub mono" style="text-transform: none; letter-spacing: 0; font-family: 'Spectral', serif; font-size: 1.1rem;">
+                Design intervention for a complex world™
+            </p>
+            <div class="cta-group">
+                <a href="#contact" class="btn">Start a Project</a>
+                <a href="#works" class="btn btn-secondary">View Our Work</a>
+            </div>
+        </div>
+        <div class="hero-right" id="dither-field">
+            <canvas id="dither-canvas"></canvas>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <span class="section-label mono">About Morph</span>
+        <div class="about-content">
+            <h2 class="about-headline">
+                Founded in 2024 in Palangkaraya, Morph was created as a space for visual exploration, strategic design, and digital storytelling.
+            </h2>
+            <p class="about-text">
+                We believe every brand has a shape, rhythm, and personality — our job is to help reveal it through design, motion, content, and interactive experiences. We do not design just to decorate. We design to shape perception, build recognition, and create moments people remember.
+            </p>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services">
+        <span class="section-label mono">What We Do</span>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>Brand Identity</h3>
+                <p>Membangun identitas visual brand mulai dari logo, warna, tipografi, brand guideline, hingga sistem visual yang konsisten.</p>
+            </div>
+            <div class="service-card">
+                <h3>Web Design & Development</h3>
+                <p>Merancang dan membangun website yang modern, responsif, cepat, dan sesuai karakter brand.</p>
+            </div>
+            <div class="service-card">
+                <h3>Social Media Creative</h3>
+                <p>Membuat visual campaign, konten promosi, template feed, dan aset digital untuk kebutuhan media sosial.</p>
+            </div>
+            <div class="service-card">
+                <h3>Campaign Direction</h3>
+                <p>Membantu merancang konsep campaign, visual direction, copywriting, dan strategi komunikasi kreatif.</p>
+            </div>
+            <div class="service-card">
+                <h3>Motion & Visual Assets</h3>
+                <p>Membuat motion graphic, poster digital, visual event, experimental graphic, dan aset promosi lainnya.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Works Section -->
+    <section id="works">
+        <span class="section-label mono" style="color: var(--ground-yellow);">Selected Works</span>
+        <div class="works-grid">
+            <div class="work-item">
+                <span class="work-number mono">01</span>
+                <h3>Rimba Coffee</h3>
+                <span class="work-meta">Branding, Packaging, Social Media</span>
+            </div>
+            <div class="work-item">
+                <span class="work-number mono">02</span>
+                <h3>Svara Festival</h3>
+                <span class="work-meta">Campaign, Poster Design, Motion</span>
+            </div>
+            <div class="work-item">
+                <span class="work-number mono">03</span>
+                <h3>Kalawa Studio</h3>
+                <span class="work-meta">Web Design, Development, Art Direction</span>
+            </div>
+            <div class="work-item">
+                <span class="work-number mono">04</span>
+                <h3>Urban Plate</h3>
+                <span class="work-meta">Social Media, Creative Direction</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process">
+        <span class="section-label mono">How We Work</span>
+        <div class="process-steps">
+            <div class="step">
+                <span class="step-number mono">01</span>
+                <h3>Discover</h3>
+                <p>Kami memahami brand, target audiens, masalah utama, dan arah visual yang ingin dicapai.</p>
+            </div>
+            <div class="step">
+                <span class="step-number mono">02</span>
+                <h3>Define</h3>
+                <p>Kami menyusun strategi kreatif, moodboard, pesan utama, dan sistem visual awal.</p>
+            </div>
+            <div class="step">
+                <span class="step-number mono">03</span>
+                <h3>Design</h3>
+                <p>Kami mulai membuat visual, layout, prototype, atau aset kreatif berdasarkan arah yang sudah disepakati.</p>
+            </div>
+            <div class="step">
+                <span class="step-number mono">04</span>
+                <h3>Deliver</h3>
+                <p>Kami menyiapkan final asset, file produksi, guideline, atau website siap pakai sesuai kebutuhan project.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section id="philosophy">
+        <h2 class="philosophy-quote">
+            We do not design just to <em>decorate</em>. We design to shape perception, build recognition, and create moments people remember.
+        </h2>
+        <div class="keywords">
+            <span>Bold</span>
+            <span>Experimental</span>
+            <span>Strategic</span>
+            <span>Editorial</span>
+            <span>Digital-first</span>
+            <span>Human-centered</span>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials">
+        <span class="section-label mono">Testimonials</span>
+        <div class="testimonials-grid">
+            <div class="testimonial">
+                <p>Morph helped us turn a vague idea into a visual identity that actually feels like our brand.</p>
+                <cite class="mono">— Andra, Founder of Rimba Coffee</cite>
+            </div>
+            <div class="testimonial">
+                <p>Their design direction made our campaign look more confident and memorable.</p>
+                <cite class="mono">— Nadya, Event Director at Svara Festival</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2 class="contact-headline">Let's <em>Morph</em> Your Ideas</h2>
+        <p class="contact-text">
+            Have a brand, campaign, or website idea? Let's shape it into something clear, bold, and memorable.
+        </p>
+        <div class="contact-links">
+            <a href="mailto:hello@morph.studio">Start a Project</a>
+            <a href="mailto:hello@morph.studio">hello@morph.studio</a>
+            <a href="https://instagram.com/morph.studio" target="_blank">@morph.studio</a>
+            <span>Palangkaraya, Indonesia</span>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2024 Morph Creative Agency. All rights reserved.
+    </footer>
+
+    <script>
+        /**
+         * RISO DITHER FIELD GENERATOR
+         * Strict implementation of the brief:
+         * - 48px cell grid
+         * - Hard seam (no gradient between halves)
+         * - Olive only from green+orange overlap
+         * - Quantized snap transitions (no easing)
+         * - Idle breathing + mouse perturbation
+         */
+        
+        const canvas = document.getElementById('dither-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('dither-field');
+        
+        // Config
+        const CELL_SIZE = 48;
+        const PERTURB_RADIUS = 140;
+        const FLIP_PROBABILITY = 0.18;
+        const IDLE_CHANCE = 0.02;
+        
+        // Colors (RGB)
+        const COLORS = {
+            paper: [255, 255, 255],
+            yellow: [244, 230, 0],
+            green: [93, 251, 94],
+            orange: [255, 90, 30],
+            olive: [91, 81, 25] // Computed overprint of green + orange
+        };
+        
+        // Shapes
+        const SHAPE_NONE = 0;
+        const SHAPE_SQUARE = 1;
+        const SHAPE_CIRCLE = 2;
+        const SHAPE_SCALLOP = 3;
+        
+        let cells = [];
+        let cols, rows;
+        let pointer = null;
+        let animationId;
+        let lastTime = 0;
+        
+        // Simple noise function (similar to Perlin noise)
+        function noise(x, y) {
+            return Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1;
+        }
+        
+        class Cell {
+            constructor(col, row) {
+                this.col = col;
+                this.row = row;
+                this.x = col * CELL_SIZE;
+                this.y = row * CELL_SIZE;
+                this.centerX = this.x + CELL_SIZE / 2;
+                this.centerY = this.y + CELL_SIZE / 2;
+                
+                // Distance from left edge (seam) normalized 0-1
+                this.seamDist = col / cols;
+                
+                // Rest state (calculated from noise field)
+                this.setRestState();
+                
+                // Current state
+                this.shape = this.restShape;
+                this.ink = this.restInk;
+                
+                // For gradual return to rest
+                this.targetShape = this.restShape;
+                this.targetInk = this.restInk;
+                this.stepsToRest = 0;
+            }
+            
+            setRestState() {
+                // Density falls off with distance from seam (left edge)
+                const density = 1 - this.seamDist; 
+                const n = noise(this.col * 0.1, this.row * 0.1);
+                
+                // Near seam: denser, more circles/scallops, more color variety
+                // Far edge: sparser, mostly orange squares on white
+                if (density > 0.7) {
+                    // Near seam - complex shapes and colors
+                    if (n < 0.2) this.restShape = SHAPE_NONE;
+                    else if (n < 0.5) this.restShape = SHAPE_SQUARE;
+                    else if (n < 0.8) this.restShape = SHAPE_CIRCLE;
+                    else this.restShape = SHAPE_SCALLOP;
+                    
+                    const inkRand = Math.random();
+                    if (inkRand < 0.2) this.restInk = 'paper';
+                    else if (inkRand < 0.4) this.restInk = 'yellow';
+                    else if (inkRand < 0.6) this.restInk = 'green';
+                    else if (inkRand < 0.8) this.restInk = 'orange';
+                    else this.restInk = 'olive'; // Overprint
+                } else if (density > 0.3) {
+                    // Middle - moderate complexity
+                    if (n < 0.4) this.restShape = SHAPE_NONE;
+                    else if (n < 0.7) this.restShape = SHAPE_SQUARE;
+                    else this.restShape = SHAPE_CIRCLE;
+                    
+                    const inkRand = Math.random();
+                    if (inkRand < 0.3) this.restInk = 'paper';
+                    else if (inkRand < 0.6) this.restInk = 'orange';
+                    else this.restInk = 'yellow';
+                } else {
+                    // Far edge - sparse, mostly orange/white checkerboard
+                    if (n < 0.6) this.restShape = SHAPE_NONE;
+                    else this.restShape = SHAPE_SQUARE;
+                    
+                    if (Math.random() < 0.3) this.restInk = 'orange';
+                    else this.restInk = 'paper';
+                }
+            }
+            
+            updateRestStateFromNoise() {
+                // Update rest state based on current noise/time for idle breathing
+                // But keep it subtle - only change if really different
+                this.setRestState();
+            }
+            
+            perturb() {
+                // Immediate snap to random new state
+                const shapes = [SHAPE_NONE, SHAPE_SQUARE, SHAPE_CIRCLE, SHAPE_SCALLOP];
+                const inks = ['paper', 'yellow', 'green', 'orange', 'olive'];
+                
+                this.shape = shapes[Math.floor(Math.random() * shapes.length)];
+                this.ink = inks[Math.floor(Math.random() * inks.length)];
+                this.stepsToRest = 6; // Frames to return to rest
+            }
+            
+            stepTowardRest() {
+                if (this.stepsToRest > 0) {
+                    this.stepsToRest--;
+                    // Quantized step - direct assignment, no easing
+                    if (this.stepsToRest === 3 || this.stepsToRest === 0) {
+                        // Snap halfway or all the way
+                        if (Math.random() > 0.5) {
+                            this.shape = this.restShape;
+                            this.ink = this.restInk;
+                        }
+                    }
+                } else {
+                    this.shape = this.restShape;
+                    this.ink = this.restInk;
+                }
+            }
+            
+            draw(ctx) {
+                if (this.shape === SHAPE_NONE) return;
+                
+                ctx.fillStyle = `rgb(${COLORS[this.ink].join(',')})`;
+                
+                const padding = 4; // 4px gap for grid effect
+                const size = CELL_SIZE - padding * 2;
+                const cx = this.x + CELL_SIZE / 2;
+                const cy = this.y + CELL_SIZE / 2;
+                
+                ctx.beginPath();
+                
+                if (this.shape === SHAPE_SQUARE) {
+                    ctx.fillRect(this.x + padding, this.y + padding, size, size);
+                } else if (this.shape === SHAPE_CIRCLE) {
+                    ctx.arc(cx, cy, size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (this.shape === SHAPE_SCALLOP) {
+                    // Scallop shape: circle with a flat bottom cut
+                    ctx.arc(cx, cy - 2, size/2, 0, Math.PI, true);
+                    ctx.lineTo(cx - size/2, cy + size/2 - 2);
+                    ctx.lineTo(cx + size/2, cy + size/2 - 2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+        }
+        
+        // Initialize grid
+        function resize() {
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            cols = Math.ceil(rect.width / CELL_SIZE);
+            rows = Math.ceil(rect.height / CELL_SIZE);
+            
+            cells = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    cells.push(new Cell(c, r));
+                }
+            }
+        }
+        
+        // Interaction handlers
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            pointer = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+        
+        function handleMouseLeave() {
+            pointer = null;
+        }
+        
+        // Animation loop
+        function animate(timestamp) {
+            // Clear with paper
+            ctx.fillStyle = 'rgb(255, 255, 255)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Idle breathing: occasionally perturb a few cells at random
+            if (Math.random() < IDLE_CHANCE) {
+                const idx = Math.floor(Math.random() * cells.length);
+                const cell = cells[idx];
+                // Re-roll rest state for subtle drift
+                cell.setRestState();
+                cell.shape = cell.restShape;
+                cell.ink = cell.restInk;
+            }
+            
+            // Process each cell
+            cells.forEach(cell => {
+                let shouldStepTowardRest = true;
+                
+                if (pointer) {
+                    const dx = cell.centerX - pointer.x;
+                    const dy = cell.centerY - pointer.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < PERTURB_RADIUS) {
+                        // Probability falls off with distance from cursor
+                        const chance = FLIP_PROBABILITY * (1 - dist / PERTURB_RADIUS);
+                        if (Math.random() < chance) {
+                            // SNAP change - immediate, no easing
+                            cell.perturb();
+                            shouldStepTowardRest = false;
+                        }
+                    }
+                }
+                
+                if (shouldStepTowardRest && (cell.shape !== cell.restShape || cell.ink !== cell.restInk)) {
+                    // Quantized recovery toward rest state (snap, not smooth)
+                    cell.stepTowardRest();
+                }
+                
+                cell.draw(ctx);
+            });
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        window.addEventListener('resize', resize);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseleave', handleMouseLeave);
+        
+        // Touch support for mobile
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            pointer = {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }, { passive: false });
+        
+        canvas.addEventListener('touchend', () => {
+            pointer = null;
+        });
+        
+        // Start
+        resize();
+        animate(0);
+    </script>
+</body>
+</html>
