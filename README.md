@@ -220,4 +220,4 @@ All examples below: brief generated with **Claude Sonnet 4.6**, HTML built by **
 
 ## License
 
-Add your preferred license here before publishing (e.g. MIT).
+MIT License — see [LICENSE](LICENSE) for details.
