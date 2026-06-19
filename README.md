@@ -37,9 +37,9 @@ It does not generate the final landing page, portfolio, or interactive artifact 
 It generates the *instructions* a builder — a follow-up Claude pass, or any other model —
 uses to generate that artifact.
 
-> **Important:** `creative-director` produces a **creative brief**, not a design system.
-> A design system gives you walls. This gives you a canvas — stretched and primed
-> for one specific painting.
+A design system gives you walls. This gives you a canvas — stretched and primed
+for one specific painting.
+
 ---
 
 ## How It Works
