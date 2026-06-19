@@ -16,8 +16,6 @@
     src="./assets/demo.gif"
   />
 
-  <br /><br />
-
   <img
     width="800"
     height="450"
