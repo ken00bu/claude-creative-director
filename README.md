@@ -3,8 +3,6 @@
 <img width="800" height="450" alt="creative-director demo" src="./assets/demo.gif" />
 <br /><br />
 <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/3a01b680-51df-46e5-a057-4a0297ca1d47" />
-<br /><br />
-<img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/ad9088f0-dfb9-4b12-a3cb-52e9920bd4e3" />
 </div>
 
 
@@ -221,6 +219,8 @@ All examples below: brief generated with **Claude Sonnet 4.6**, HTML built by **
 <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/875c9b40-f212-4e48-85f1-d2b74250d9f5" />
 <br /><br />
 <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/32fde6c5-4584-4343-8eba-cdb78cef61db" />
+<br /><br />
+<img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/ad9088f0-dfb9-4b12-a3cb-52e9920bd4e3" />
 </div>
 
 
